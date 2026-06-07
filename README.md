@@ -55,7 +55,7 @@ _One OpenAI-compatible endpoint that unifies free LLM tiers from 17+ providers �
 بعدها الأوامر واحدة على كل الأنظمة (Terminal أو PowerShell):
 
 ```bash
-git clone <your-repo-url> zad && cd zad
+git clone https://github.com/ahmedvnabil/zad.git zad && cd zad
 npm install
 
 # جهّز الإعدادات
