@@ -1,0 +1,125 @@
+{
+  "_meta": { "name": "English", "code": "en", "dir": "ltr", "flag": "🇬🇧" },
+
+  "doc": {
+    "title": "Zad · Free AI Model Router",
+    "description": "Zad — one OpenAI-compatible endpoint that unifies the free tiers of 17+ AI providers. Self-hosted, keys encrypted, no monthly bill."
+  },
+
+  "nav": {
+    "features": "Features",
+    "usage": "Usage",
+    "how": "How it works",
+    "install": "Install",
+    "github": "GitHub ↗",
+    "lang_label": "Language"
+  },
+
+  "hero": {
+    "tag_pre": "Open source · self-hosted · ",
+    "tag_strong": "$0/month",
+    "title_pre": "All the free AI models,",
+    "title_highlight": "unified",
+    "title_end": "behind one endpoint.",
+    "lead": "Zad puts the free tiers of 17+ providers behind a single OpenAI-compatible endpoint — automatic fallback, live analytics, real savings. Your keys, encrypted on your own server.",
+    "cta_primary": "⭐ Start on GitHub",
+    "cta_secondary": "Install guide",
+    "stat_providers": "free providers",
+    "stat_models": "models · one key",
+    "stat_cost": "monthly cost",
+    "code_label_lang": "python",
+    "code_label_hint": "just swap base_url ↓"
+  },
+
+  "shot": { "alt": "Zad dashboard" },
+
+  "problem": {
+    "title": "3 barriers that keep teams from using AI",
+    "cost_h": "Cost",
+    "cost_p": "Subscriptions and per-token bills that scale unexpectedly and kill small projects.",
+    "privacy_h": "Privacy",
+    "privacy_p": "Discomfort sending customer data to a third party in the cloud.",
+    "lockin_h": "Vendor lock-in",
+    "lockin_p": "If they raise prices or go down, your app goes with them — no alternative.",
+    "solve_strong": "Zad solves all three",
+    "solve_rest": " — free models + self-hosting + 17 providers behind one key with auto-fallback."
+  },
+
+  "features": {
+    "title": "Everything you need in an AI router",
+    "openai_h": "OpenAI-compatible",
+    "openai_p": "Swap base_url — any SDK or tool works immediately.",
+    "fallback_h": "Smart fallback",
+    "fallback_p": "Ranks models by intelligence/speed/budget and jumps to the next on failure.",
+    "pricing_h": "Real pricing + savings",
+    "pricing_p": "From the LiteLLM table — shows what you'd have paid on a paid API.",
+    "live_h": "Live analytics",
+    "live_p": "Requests, latency, tokens, errors — updated in real time via SSE.",
+    "telegram_h": "Telegram alerts",
+    "telegram_p": "New key · provider down/recovered · daily digest · error spikes — configured from the UI.",
+    "custom_h": "Custom providers",
+    "custom_p": "Add any OpenAI-compatible service and edit its URL live (Ollama · vLLM · LM Studio).",
+    "more_keys": "Keys encrypted at rest",
+    "more_rtl": "Full Arabic RTL UI",
+    "more_sqlite": "Self-hosted — local SQLite"
+  },
+
+  "usage": {
+    "title": "Use it in any application",
+    "sub_pre": "OpenAI-compatible — works with any SDK. Pick your language, and toggle between reading the key from ",
+    "sub_env": ".env",
+    "sub_post": " or inline.",
+    "env_label": "Use ",
+    "copy": "Copy",
+    "copy_done": "✓ Copied"
+  },
+
+  "how": {
+    "title": "From zero to running in 3 steps",
+    "s1_h": "Sign up with a free provider",
+    "s1_p": "Groq · Cerebras · Google · Mistral and more — free signup, no credit card.",
+    "s2_h": "Paste the key into Zad",
+    "s2_p": "From the Keys page — it's verified instantly and stored encrypted. Repeat for any number of providers.",
+    "s3_h": "Use one unified key",
+    "s3_p_pre": "Point your apps at ",
+    "s3_p_post": " with the Zad unified key — Zad handles the rest."
+  },
+
+  "install": {
+    "title": "Run it on your system in minutes",
+    "sub": "The only OS-specific step is installing Node.js ≥ 20 — after that, every command is identical.",
+    "mac": "macOS",
+    "mac_sub": "Homebrew",
+    "linux": "Linux",
+    "linux_sub": "Debian / Ubuntu",
+    "win": "Windows",
+    "win_sub": "PowerShell · winget",
+    "comment_env": "# then set ENCRYPTION_KEY (see README)",
+    "comment_open": "# open http://localhost:3001 🎉"
+  },
+
+  "cta": {
+    "title_pre": "Start using AI",
+    "title_highlight": "for $0",
+    "sub": "Open source, self-hosted, ready for global and Arabic-speaking communities.",
+    "primary": "⭐ Star on GitHub",
+    "secondary": "Install guide"
+  },
+
+  "footer": {
+    "features": "Features",
+    "install": "Install",
+    "github": "GitHub",
+    "attr_pre": "MIT-licensed · built on and derived from ",
+    "attr_link": "freellmapi",
+    "attr_post": " by Tashfeen Ahmed — thanks for the original work."
+  },
+
+  "code": {
+    "key_placeholder": "<your-zad-key>",
+    "msg_hello": "Hello!",
+    "msg_role": "user",
+    "comment_auto": "let Zad pick + auto-fallback",
+    "install_curl_note": "# no install needed — any terminal"
+  }
+}
