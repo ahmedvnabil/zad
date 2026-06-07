@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>زاد · موجّه نماذج الذكاء الاصطناعي المجانية</title>
+<meta name="description" content="زاد — موجّه واحد متوافق مع OpenAI يجمع نماذج الذكاء الاصطناعي المجانية من 17+ مزوّداً. مستضاف ذاتياً، مفاتيحك مشفّرة، وبدون فاتورة شهرية." />
+<meta name="theme-color" content="#0a0e1c" />
+<meta property="og:title" content="زاد · موجّه النماذج المجانية للذكاء الاصطناعي" />
+<meta property="og:description" content="كل نماذج الذكاء الاصطناعي المجانية في موجّه واحد متوافق مع OpenAI — مستضاف ذاتياً، مفتوح المصدر." />
+<meta property="og:image" content="og.png" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230a0e1c'/%3E%3Cg transform='translate(2.6 2.6) scale(0.84)' stroke='%2334d8ea' stroke-width='2.4' stroke-linecap='round' fill='none'%3E%3Cpath d='M4 7 C 11 7, 12 16, 18.5 16'/%3E%3Cpath d='M4 16 C 9 16, 12 16, 18.5 16'/%3E%3Cpath d='M4 25 C 11 25, 12 16, 18.5 16'/%3E%3Cpath d='M18.5 16 H 26' stroke-width='3.1'/%3E%3Ccircle cx='27.4' cy='16' r='2.3' fill='%2334d8ea' stroke='none'/%3E%3C/g%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+/* Hallmark · redesign · macrostructure: Split-Workbench (API-first) · genre: modern-minimal · tone: technical
+ * theme: zad-oklch (brand cyan→indigo, OKLCH tokens) · fonts: IBM Plex Sans Arabic + IBM Plex Mono
+ * pre-emit critique: P4 H5 E4 S5 R4 V4 · fixes: gate57 (no fake code chrome) · gate58 (OKLCH tokens) · emoji→line-SVG */
+
+:root{
+  /* paper + ink (OKLCH) */
+  --paper:        oklch(0.15 0.022 264);
+  --paper-2:      oklch(0.19 0.028 264);
+  --paper-3:      oklch(0.24 0.032 264);
+  --code:         oklch(0.12 0.018 264);
+  --ink:          oklch(0.96 0.008 250);
+  --ink-2:        oklch(0.80 0.018 255);
+  --ink-3:        oklch(0.64 0.022 258);
+  --line:         oklch(1 0 0 / 0.09);
+  --line-2:       oklch(1 0 0 / 0.05);
+  /* brand */
+  --cyan:         oklch(0.83 0.13 200);
+  --indigo:       oklch(0.60 0.20 274);
+  --green:        oklch(0.80 0.15 162);
+  --amber:        oklch(0.84 0.13 80);
+  --brand-soft:   oklch(0.60 0.20 274 / 0.16);
+  --grad:         linear-gradient(108deg, var(--cyan) 0%, oklch(0.66 0.18 250) 52%, var(--indigo) 100%);
+  /* type */
+  --sans: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  /* scale (4pt) */
+  --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:24px; --s-6:32px; --s-7:48px; --s-8:64px; --s-9:96px;
+  --r:14px; --r-lg:20px;
+  /* motion */
+  --ease-out: cubic-bezier(.2,.7,.2,1);
+  --ease-in-out: cubic-bezier(.5,0,.2,1);
+  --dur: .55s;
+  /* code syntax */
+  --c-key: var(--cyan); --c-str: oklch(0.85 0.13 150); --c-com: oklch(0.55 0.02 260);
+}
+*{box-sizing:border-box;margin:0}
+html,body{overflow-x:clip}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.8;
+  font-weight:400;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1140px;margin:0 auto;padding:0 var(--s-5)}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.mono{font-family:var(--mono);direction:ltr;unicode-bidi:isolate}
+.tnum{font-family:var(--mono);font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
+
+/* nav */
+header{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);
+  background:oklch(0.15 0.022 264 / 0.78);border-bottom:1px solid var(--line)}
+nav{display:flex;align-items:center;gap:var(--s-6);height:62px}
+.brand{display:flex;align-items:center;gap:9px;font-weight:600;font-size:19px;letter-spacing:-.2px}
+.navlinks{display:flex;gap:var(--s-6);margin-inline-start:auto;font-size:14.5px;color:var(--ink-2)}
+.navlinks a{transition:color .15s var(--ease-out)}
+.navlinks a:hover{color:var(--cyan)}
+@media(max-width:780px){.navlinks{display:none}}
+.btn{display:inline-flex;align-items:center;gap:var(--s-2);font:inherit;font-size:15px;font-weight:500;
+  cursor:pointer;border-radius:11px;padding:10px 17px;border:1px solid var(--line);color:var(--ink);
+  background:var(--paper-2);transition:.18s var(--ease-out);white-space:nowrap}
+.btn:hover{border-color:var(--cyan);color:var(--cyan);transform:translateY(-1px)}
+.btn.primary{background:var(--grad);color:oklch(0.16 0.03 264);border:0;font-weight:600}
+.btn.primary:hover{filter:brightness(1.07);color:oklch(0.16 0.03 264)}
+.btn.lg{font-size:16px;padding:13px 24px}
+
+/* HERO — asymmetric split, code-forward (NOT centered) */
+.hero{position:relative;padding:var(--s-9) 0 var(--s-7);overflow:hidden}
+.hero::before{content:"";position:absolute;inset:-15% 30% auto -10%;height:520px;z-index:0;pointer-events:none;
+  filter:blur(14px);background:radial-gradient(50% 80% at 30% 0%, oklch(0.60 0.20 274 / 0.22), transparent 64%),
+  radial-gradient(40% 70% at 75% 10%, oklch(0.83 0.13 200 / 0.12), transparent 62%)}
+.hero .wrap{position:relative;z-index:1;display:grid;grid-template-columns:1.05fr .95fr;gap:var(--s-7);align-items:center}
+@media(max-width:900px){.hero .wrap{grid-template-columns:1fr;gap:var(--s-6)}}
+.tag{display:inline-flex;align-items:center;gap:var(--s-2);font-size:12.5px;color:var(--ink-2);
+  border:1px solid var(--line);background:var(--paper-2);border-radius:999px;padding:5px 13px;margin-bottom:var(--s-5)}
+.tag b{color:var(--cyan);font-weight:600}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+h1{font-size:clamp(34px,5.4vw,56px);font-weight:700;line-height:1.16;letter-spacing:-1px;
+  overflow-wrap:anywhere;min-width:0}
+.lead{margin-top:var(--s-5);max-width:46ch;font-size:clamp(16px,2vw,18.5px);color:var(--ink-2)}
+.hcta{display:flex;gap:var(--s-3);flex-wrap:wrap;margin-top:var(--s-6)}
+.hstrip{display:flex;gap:var(--s-6);margin-top:var(--s-6);padding-top:var(--s-5);border-top:1px solid var(--line);flex-wrap:wrap}
+.hstrip div{min-width:0}
+.hstrip b{display:block;font-family:var(--mono);font-size:22px;font-weight:600;color:var(--ink);direction:ltr}
+.hstrip span{font-size:12.5px;color:var(--ink-3)}
+
+/* code card — NO fake browser chrome; a quiet language label only */
+.codecard{border:1px solid var(--line);border-radius:var(--r);background:var(--code);overflow:hidden}
+.codecard .lang{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);padding:10px 16px 0;direction:ltr;text-align:left;
+  display:flex;justify-content:space-between;align-items:center;gap:8px}
+.codecard pre{margin:0;padding:12px 16px 16px;overflow:auto;font-family:var(--mono);font-size:13px;line-height:1.85;
+  color:var(--ink-2);direction:ltr;text-align:left}
+.k{color:var(--c-key)} .s{color:var(--c-str)} .c{color:var(--c-com)}
+
+/* screenshot band — real screenshot, auto-scroll, hairline figure (no fake chrome) */
+.shotband{padding:var(--s-6) 0}
+.heroshot{position:relative;margin:0 auto;max-width:1000px;height:440px;border-radius:var(--r-lg);
+  border:1px solid var(--line);overflow:hidden;background:var(--paper-2);
+  box-shadow:0 40px 120px -50px oklch(0.60 0.20 274 / 0.35)}
+.heroshot img{display:block;width:100%;animation:scrollshot 20s var(--ease-in-out) infinite}
+.heroshot::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+  background:linear-gradient(180deg, var(--paper) 0%, transparent 12%, transparent 88%, var(--paper) 100%)}
+@keyframes scrollshot{0%,8%{transform:translateY(0)}48%,54%{transform:translateY(calc(-100% + 440px))}94%,100%{transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.heroshot img{animation:none}}
+
+/* sections */
+section{padding:var(--s-8) 0}
+h2{font-size:clamp(25px,3.6vw,34px);font-weight:700;letter-spacing:-.5px;line-height:1.28;overflow-wrap:anywhere;min-width:0}
+.sub{color:var(--ink-3);font-size:16.5px;margin-top:var(--s-3);max-width:58ch}
+.shead{margin-bottom:var(--s-6)}
+
+/* stats — rule-separated row */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+.stats div{padding:var(--s-6) var(--s-4);border-inline-start:1px solid var(--line)}
+.stats div:first-child{border-inline-start:0}
+.stats b{display:block;font-family:var(--mono);font-size:30px;font-weight:600;color:var(--cyan);direction:ltr}
+.stats span{font-size:13px;color:var(--ink-3)}
+@media(max-width:640px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stats div:nth-child(3){border-inline-start:0}}
+
+/* problem — three lines */
+.prob{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s-4)}
+@media(max-width:780px){.prob{grid-template-columns:1fr}}
+.pcard{border:1px solid var(--line);border-radius:var(--r);padding:var(--s-5);background:var(--paper-2)}
+.pcard .ic{color:var(--ink-3)}
+.pcard h3{font-size:17px;margin:var(--s-3) 0 var(--s-1)}
+.pcard p{color:var(--ink-3);font-size:14.5px}
+.solve{margin-top:var(--s-6);font-size:18.5px;color:var(--ink-2);text-align:center}
+
+/* features — line icons, varied grid */
+.feat{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s-4)}
+@media(max-width:880px){.feat{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.feat{grid-template-columns:1fr}}
+.fcard{border:1px solid var(--line);border-radius:var(--r);padding:var(--s-5);background:var(--paper-2);transition:.2s var(--ease-out)}
+.fcard:hover{border-color:oklch(0.60 0.20 274 / 0.45);transform:translateY(-3px)}
+.fic{width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:10px;
+  background:var(--brand-soft);color:var(--cyan);margin-bottom:var(--s-4);border:1px solid var(--line)}
+.fcard h3{font-size:16.5px;margin-bottom:var(--s-1)}
+.fcard p{color:var(--ink-3);font-size:14.5px}
+.fmore{margin-top:var(--s-4);display:flex;gap:var(--s-5);flex-wrap:wrap;color:var(--ink-3);font-size:14px}
+.fmore span{display:inline-flex;align-items:center;gap:7px}
+.fmore svg{color:var(--cyan)}
+
+/* usage widget */
+.usagebox{border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;background:var(--paper-2)}
+.utabs{display:flex;gap:var(--s-1);padding:10px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.utabs button{font:inherit;font-size:14px;cursor:pointer;color:var(--ink-3);background:transparent;
+  border:1px solid transparent;border-radius:9px;padding:7px 15px;transition:.15s var(--ease-out);white-space:nowrap}
+.utabs button:hover{color:var(--ink)}
+.utabs button.active{color:var(--cyan);background:var(--brand-soft);border-color:oklch(0.60 0.20 274 / 0.35)}
+.uctrl{display:flex;align-items:center;justify-content:space-between;gap:var(--s-3);padding:11px 18px;border-bottom:1px solid var(--line)}
+.switch{display:inline-flex;align-items:center;gap:9px;font-size:13.5px;color:var(--ink-2);cursor:pointer;user-select:none}
+.switch input{appearance:none;-webkit-appearance:none;width:38px;height:21px;border-radius:999px;
+  background:var(--paper-3);position:relative;cursor:pointer;transition:.2s var(--ease-out);border:1px solid var(--line);flex:none}
+.switch input:checked{background:var(--grad);border-color:transparent}
+.switch input::after{content:"";position:absolute;top:2px;inset-inline-start:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:.2s var(--ease-out)}
+.switch input:checked::after{inset-inline-start:20px}
+.copybtn{font:inherit;font-size:12px;cursor:pointer;color:var(--ink-3);background:transparent;border:1px solid var(--line);border-radius:8px;padding:5px 13px;transition:.15s var(--ease-out)}
+.copybtn:hover{color:var(--cyan);border-color:var(--cyan)}
+.copybtn.ok{color:var(--green);border-color:var(--green)}
+.usagebox .install{padding:11px 18px 0;font-family:var(--mono);font-size:12px;color:var(--ink-3);direction:ltr;text-align:left}
+.usagebox pre{margin:0;padding:14px 18px;overflow:auto;font-family:var(--mono);font-size:13px;line-height:1.9;
+  color:var(--ink-2);direction:ltr;text-align:left;background:var(--code)}
+.envfile{border-top:1px solid var(--line)}
+.envfile .envlabel{padding:11px 18px 0;font-size:12px;color:var(--amber);direction:ltr;text-align:left;font-family:var(--mono)}
+.envfile pre{padding:6px 18px 16px;background:var(--code)}
+.envfile.hide{display:none}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s-4)}
+@media(max-width:780px){.steps{grid-template-columns:1fr}}
+.step{border:1px solid var(--line);border-radius:var(--r);padding:var(--s-5);background:var(--paper-2)}
+.step .n{font-family:var(--mono);font-weight:600;font-size:14px;width:30px;height:30px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;background:var(--brand-soft);color:var(--cyan);
+  border:1px solid var(--line);margin-bottom:var(--s-3);direction:ltr}
+.step h3{font-size:16.5px;margin-bottom:var(--s-1)}
+.step p{color:var(--ink-3);font-size:14.5px}
+
+/* install (OS) */
+.osgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s-4);margin-bottom:var(--s-5)}
+@media(max-width:780px){.osgrid{grid-template-columns:1fr}}
+.oscard{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--paper-2)}
+.oscard .head{display:flex;align-items:center;gap:9px;padding:14px 16px;border-bottom:1px solid var(--line);font-weight:500;font-size:15px}
+.oscard .head small{margin-inline-start:auto;color:var(--ink-3);font-weight:400;font-size:11.5px}
+.oscard pre{margin:0;padding:14px 16px;font-family:var(--mono);font-size:12.5px;line-height:1.8;color:var(--ink-2);direction:ltr;text-align:left;overflow:auto;background:var(--code)}
+.runblock pre{margin:0;padding:16px 18px;font-family:var(--mono);font-size:13px;line-height:1.9;color:var(--ink-2);direction:ltr;text-align:left;overflow:auto;background:var(--code);border:1px solid var(--line);border-radius:var(--r)}
+
+/* final cta */
+.final{border:1px solid var(--line);border-radius:var(--r-lg);padding:var(--s-8) var(--s-6);text-align:center;
+  position:relative;overflow:hidden;background:var(--paper-2)}
+.final::before{content:"";position:absolute;inset:auto -10% -40% -10%;height:300px;filter:blur(12px);
+  background:radial-gradient(40% 100% at 40% 100%, oklch(0.83 0.13 200 / 0.14), transparent 70%),
+  radial-gradient(44% 100% at 65% 100%, oklch(0.60 0.20 274 / 0.20), transparent 70%)}
+.final>*{position:relative}
+
+/* footer — statement (not 4-col link dump) */
+footer{border-top:1px solid var(--line);padding:var(--s-7) 0;color:var(--ink-3);font-size:14px}
+footer .row{display:flex;justify-content:space-between;gap:var(--s-5);flex-wrap:wrap;align-items:center}
+footer .row a{transition:color .15s var(--ease-out)}
+footer a:hover{color:var(--cyan)}
+.attr{font-size:12.5px;color:var(--ink-3);margin-top:var(--s-4);max-width:64ch}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(16px);transition:var(--dur) var(--ease-out)}
+.rv.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute"><defs>
+  <linearGradient id="bg" x1="4" y1="6" x2="28" y2="26" gradientUnits="userSpaceOnUse"><stop stop-color="#34d8ea"/><stop offset="1" stop-color="#5b50e8"/></linearGradient>
+</defs></svg>
+
+<header><div class="wrap"><nav>
+  <a class="brand" href="#top">
+    <svg width="25" height="25" viewBox="0 0 32 32" fill="none"><g stroke="url(#bg)" stroke-linecap="round" fill="none">
+      <path d="M4 7 C 11 7, 12 16, 18.5 16" stroke-width="2.3"/><path d="M4 16 C 9 16, 12 16, 18.5 16" stroke-width="2.3"/>
+      <path d="M4 25 C 11 25, 12 16, 18.5 16" stroke-width="2.3"/><path d="M18.5 16 H 26" stroke-width="3.1"/></g>
+      <circle cx="27.4" cy="16" r="2.3" fill="url(#bg)"/></svg>
+    زاد
+  </a>
+  <div class="navlinks">
+    <a href="#features">المميزات</a>
+    <a href="#usage">الاستخدام</a>
+    <a href="#how">كيف يعمل</a>
+    <a href="#install">التثبيت</a>
+  </div>
+  <a class="btn primary" href="https://github.com/USERNAME/zad" target="_blank" rel="noopener">GitHub ↗</a>
+</nav></div></header>
+
+<main id="top">
+
+<!-- HERO · split — copy + live code -->
+<section class="hero"><div class="wrap">
+  <div>
+    <span class="tag"><span class="dot"></span> مفتوح المصدر · مستضاف ذاتياً · <b>$0 شهرياً</b></span>
+    <h1>كل نماذج الذكاء الاصطناعي <span class="grad">المجانية</span><br>خلف نقطة واحدة.</h1>
+    <p class="lead">زاد بيجمع الـ free tiers من 17+ مزوّداً في endpoint واحد متوافق مع OpenAI — تحويل احتياطي تلقائي، تحليلات حيّة، وتوفير حقيقي. مفاتيحك مشفّرة على سيرفرك.</p>
+    <div class="hcta">
+      <a class="btn primary lg" href="https://github.com/USERNAME/zad" target="_blank" rel="noopener">⭐ ابدأ على GitHub</a>
+      <a class="btn lg" href="#install">دليل التثبيت</a>
+    </div>
+    <div class="hstrip">
+      <div><b>17+</b><span>مزوّد مجاني</span></div>
+      <div><b>100+</b><span>نموذج بمفتاح واحد</span></div>
+      <div><b>$0</b><span>تكلفة شهرية</span></div>
+    </div>
+  </div>
+  <div class="codecard rv">
+    <div class="lang"><span>python</span><span>بدّل base_url فقط ↓</span></div>
+    <pre><span class="k">from</span> openai <span class="k">import</span> OpenAI
+
+client = OpenAI(
+    base_url=<span class="s">"http://localhost:3001/v1"</span>,
+    api_key=<span class="s">"&lt;مفتاح-زاد&gt;"</span>,
+)
+resp = client.chat.completions.create(
+    model=<span class="s">"auto"</span>,
+    messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: <span class="s">"أهلاً!"</span>}],
+)
+<span class="k">print</span>(resp.choices[<span class="k">0</span>].message.content)</pre>
+  </div>
+</div></section>
+
+<!-- SCREENSHOT band -->
+<div class="shotband"><div class="wrap">
+  <div class="heroshot rv"><img src="screenshots/overview.png" alt="لوحة تحكّم زاد" loading="eager" /></div>
+</div></div>
+
+<!-- PROBLEM → SOLUTION -->
+<section><div class="wrap">
+  <div class="shead rv"><h2>3 حواجز بتمنع الشركات من استخدام الذكاء الاصطناعي</h2></div>
+  <div class="prob">
+    <div class="pcard rv"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><h3>التكلفة</h3><p>اشتراكات وفواتير per-token بتكبر فجأة وتوقف المشاريع الصغيرة.</p></div>
+    <div class="pcard rv"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><h3>الخصوصية</h3><p>مفيش راحة إن بيانات عملائك تروح لطرف تالت على السحابة.</p></div>
+    <div class="pcard rv"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg><h3>الارتباط بمزوّد</h3><p>لو غيّر أسعاره أو وقع، تطبيقك يقع معاه — بلا بديل.</p></div>
+  </div>
+  <p class="solve rv"><span class="grad" style="font-weight:600">زاد بيحلّ التلاتة</span> — نماذج مجانية + استضافة ذاتية + 17 مزوّداً بمفتاح واحد وتحويل تلقائي.</p>
+</div></section>
+
+<!-- FEATURES -->
+<section id="features"><div class="wrap">
+  <div class="shead rv"><h2>كل اللي تحتاجه لموجّه ذكاء اصطناعي</h2></div>
+  <div class="feat">
+    <div class="fcard rv"><div class="fic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22v-5M9 8V2M15 8V2M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/></svg></div><h3>متوافق مع OpenAI</h3><p>بدّل <span class="mono">base_url</span> بس — أي SDK أو أداة بتشتغل على طول.</p></div>
+    <div class="fcard rv"><div class="fic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.7-1.1 2-1.7 3.3-1.7H22"/><path d="m18 2 4 4-4 4M18 14l4 4-4 4"/><path d="M2 6h1.9c1.5 0 2.9.9 3.6 2.2"/></svg></div><h3>تحويل احتياطي ذكي</h3><p>يرتّب النماذج بالذكاء/السرعة/الميزانية ويقفز للي بعده عند الفشل.</p></div>
+    <div class="fcard rv"><div class="fic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><h3>تسعير حقيقي + توفير</h3><p>من جدول LiteLLM — يوريك كام كنت هتدفع لو على واجهة مدفوعة.</p></div>
+    <div class="fcard rv"><div class="fic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><h3>تحليلات حيّة</h3><p>الطلبات، زمن الاستجابة، التوكنز، الأخطاء — تتحدّث لحظياً عبر SSE.</p></div>
+    <div class="fcard rv"><div class="fic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></div><h3>إشعارات تليجرام</h3><p>مفتاح جديد · مزوّد وقع/رجع · ملخص يومي · طفرة أخطاء — تُضبط من الواجهة.</p></div>
+    <div class="fcard rv"><div class="fic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg></div><h3>مزوّدون مخصّصون</h3><p>أضف أي خدمة متوافقة مع OpenAI وعدّل رابطها live (Ollama · vLLM · LM Studio).</p></div>
+  </div>
+  <div class="fmore rv">
+    <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> مفاتيح مشفّرة at-rest</span>
+    <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20"/></svg> واجهة عربية RTL</span>
+    <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect width="20" height="8" x="2" y="2" rx="2"/><rect width="20" height="8" x="2" y="14" rx="2"/><path d="M6 6h.01M6 18h.01"/></svg> مستضاف ذاتياً — SQLite محلي</span>
+  </div>
+</div></section>
+
+<!-- USAGE (interactive) -->
+<section id="usage"><div class="wrap">
+  <div class="shead rv"><h2>استخدمه في أي تطبيق</h2><p class="sub">متوافق مع OpenAI — يشتغل مع أي SDK. اختار لغتك، وبدّل بين قراءة المفتاح من <span class="mono">.env</span> أو مباشرةً.</p></div>
+  <div class="usagebox rv">
+    <div class="utabs" id="utabs">
+      <button data-lang="python" class="active">Python</button>
+      <button data-lang="js">JavaScript</button>
+      <button data-lang="curl">cURL</button>
+      <button data-lang="go">Go</button>
+      <button data-lang="langchain">LangChain</button>
+    </div>
+    <div class="uctrl">
+      <label class="switch"><input type="checkbox" id="useenv" checked /> استخدام ملف <span class="mono">.env</span></label>
+      <button class="copybtn" id="ucopy">نسخ</button>
+    </div>
+    <div class="install" id="uinstall"></div>
+    <pre id="ucode"></pre>
+    <div class="envfile" id="envfile">
+      <div class="envlabel"># .env</div>
+      <pre id="envcode"></pre>
+    </div>
+  </div>
+</div></section>
+
+<!-- HOW -->
+<section id="how"><div class="wrap">
+  <div class="shead rv"><h2>من الصفر للتشغيل في 3 خطوات</h2></div>
+  <div class="steps">
+    <div class="step rv"><div class="n">1</div><h3>سجّل في مزوّد مجاني</h3><p>Groq · Cerebras · Google · Mistral وغيرهم — تسجيل مجاني بدون بطاقة دفع.</p></div>
+    <div class="step rv"><div class="n">2</div><h3>الصق المفتاح في زاد</h3><p>من صفحة المفاتيح — يتحقّق منه فوراً ويتخزّن مشفّراً. كرّر لأي عدد مزوّدين.</p></div>
+    <div class="step rv"><div class="n">3</div><h3>استخدم بمفتاح واحد</h3><p>وجّه تطبيقاتك لـ <span class="mono">/v1</span> بمفتاح زاد الموحّد — والباقي عليه.</p></div>
+  </div>
+</div></section>
+
+<!-- INSTALL -->
+<section id="install"><div class="wrap">
+  <div class="shead rv"><h2>شغّله على نظامك في دقائق</h2><p class="sub">الخطوة الوحيدة المختلفة هي تثبيت Node.js ≥ 20 — بعدها الأوامر واحدة على كل الأنظمة.</p></div>
+  <div class="osgrid">
+    <div class="oscard rv"><div class="head">🍎 macOS <small>Homebrew</small></div><pre>brew install node git</pre></div>
+    <div class="oscard rv"><div class="head">🐧 Linux <small>Debian / Ubuntu</small></div><pre>curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs git</pre></div>
+    <div class="oscard rv"><div class="head">🪟 Windows <small>PowerShell · winget</small></div><pre>winget install OpenJS.NodeJS.LTS Git.Git</pre></div>
+  </div>
+  <div class="runblock rv">
+    <pre>git clone https://github.com/USERNAME/zad.git zad && <span class="k">cd</span> zad
+npm install
+cp .env.example .env       <span class="c"># ثم ضع ENCRYPTION_KEY (انظر README)</span>
+npm run build && node server/dist/index.js
+<span class="c"># افتح http://localhost:3001 🎉</span></pre>
+  </div>
+</div></section>
+
+<!-- FINAL CTA -->
+<section><div class="wrap"><div class="final rv">
+  <h2>ابدأ تستخدم الذكاء الاصطناعي <span class="grad">بـ $0</span></h2>
+  <p class="sub" style="margin:var(--s-3) auto 0;text-align:center">مفتوح المصدر، مستضاف ذاتياً، وجاهز للمجتمع العربي.</p>
+  <div class="hcta" style="justify-content:center;margin-top:var(--s-6)">
+    <a class="btn primary lg" href="https://github.com/USERNAME/zad" target="_blank" rel="noopener">⭐ على GitHub</a>
+    <a class="btn lg" href="#install">دليل التشغيل</a>
+  </div>
+</div></div></section>
+
+</main>
+
+<footer><div class="wrap">
+  <div class="row">
+    <a class="brand" href="#top" style="font-size:17px">
+      <svg width="21" height="21" viewBox="0 0 32 32" fill="none"><g stroke="url(#bg)" stroke-linecap="round" fill="none">
+        <path d="M4 7 C 11 7, 12 16, 18.5 16" stroke-width="2.3"/><path d="M4 16 C 9 16, 12 16, 18.5 16" stroke-width="2.3"/>
+        <path d="M4 25 C 11 25, 12 16, 18.5 16" stroke-width="2.3"/><path d="M18.5 16 H 26" stroke-width="3.1"/></g>
+        <circle cx="27.4" cy="16" r="2.3" fill="url(#bg)"/></svg>
+      زاد
+    </a>
+    <div style="display:flex;gap:var(--s-5)">
+      <a href="#features">المميزات</a>
+      <a href="#install">التثبيت</a>
+      <a href="https://github.com/USERNAME/zad" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+  <p class="attr">مرخّص تحت MIT · مبني على ومشتقّ من مشروع <a href="https://github.com/tashfeenahmed/freellmapi" target="_blank" rel="noopener">freellmapi</a> لـ Tashfeen Ahmed — شكراً للعمل الأصلي.</p>
+</div></footer>
+
+<script>
+  const io = new IntersectionObserver((es) => {
+    es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: .12 });
+  document.querySelectorAll('.rv').forEach(el => io.observe(el));
+
+  // ---- interactive usage widget ----
+  const KEY = 'zad-xxxxxxxxxxxxxxxx';
+  const URLV = 'http://localhost:3001/v1';
+  const ENVFILE = `ZAD_BASE_URL=${URLV}\nZAD_API_KEY=${KEY}`;
+
+  const EX = {
+    python: { install: 'pip install openai',
+      inline:`from openai import OpenAI\n\nclient = OpenAI(\n    base_url="${URLV}",\n    api_key="${KEY}",\n)\nresp = client.chat.completions.create(\n    model="auto",\n    messages=[{"role": "user", "content": "أهلاً!"}],\n)\nprint(resp.choices[0].message.content)`,
+      env:`import os\nfrom openai import OpenAI\n\nclient = OpenAI(\n    base_url=os.environ["ZAD_BASE_URL"],\n    api_key=os.environ["ZAD_API_KEY"],\n)\nresp = client.chat.completions.create(\n    model="auto",\n    messages=[{"role": "user", "content": "أهلاً!"}],\n)\nprint(resp.choices[0].message.content)` },
+    js: { install: 'npm install openai',
+      inline:`import OpenAI from "openai";\n\nconst client = new OpenAI({\n  baseURL: "${URLV}",\n  apiKey: "${KEY}",\n});\nconst resp = await client.chat.completions.create({\n  model: "auto",\n  messages: [{ role: "user", content: "أهلاً!" }],\n});\nconsole.log(resp.choices[0].message.content);`,
+      env:`import "dotenv/config";\nimport OpenAI from "openai";\n\nconst client = new OpenAI({\n  baseURL: process.env.ZAD_BASE_URL,\n  apiKey: process.env.ZAD_API_KEY,\n});\nconst resp = await client.chat.completions.create({\n  model: "auto",\n  messages: [{ role: "user", content: "أهلاً!" }],\n});\nconsole.log(resp.choices[0].message.content);` },
+    curl: { install: '# لا يحتاج تثبيت — أي طرفية',
+      inline:`curl ${URLV}/chat/completions \\\n  -H "Authorization: Bearer ${KEY}" \\\n  -H "Content-Type: application/json" \\\n  -d '{"model":"auto","messages":[{"role":"user","content":"أهلاً!"}]}'`,
+      env:`# source .env  (أو export ZAD_API_KEY=...)\ncurl "$ZAD_BASE_URL/chat/completions" \\\n  -H "Authorization: Bearer $ZAD_API_KEY" \\\n  -H "Content-Type: application/json" \\\n  -d '{"model":"auto","messages":[{"role":"user","content":"أهلاً!"}]}'` },
+    go: { install: 'go get github.com/sashabaranov/go-openai',
+      inline:`package main\n\nimport (\n  "context"\n  "fmt"\n  openai "github.com/sashabaranov/go-openai"\n)\n\nfunc main() {\n  cfg := openai.DefaultConfig("${KEY}")\n  cfg.BaseURL = "${URLV}"\n  client := openai.NewClientWithConfig(cfg)\n  resp, _ := client.CreateChatCompletion(context.Background(), openai.ChatCompletionRequest{\n    Model:    "auto",\n    Messages: []openai.ChatCompletionMessage{{Role: "user", Content: "أهلاً!"}},\n  })\n  fmt.Println(resp.Choices[0].Message.Content)\n}`,
+      env:`package main\n\nimport (\n  "context"\n  "fmt"\n  "os"\n  openai "github.com/sashabaranov/go-openai"\n)\n\nfunc main() {\n  cfg := openai.DefaultConfig(os.Getenv("ZAD_API_KEY"))\n  cfg.BaseURL = os.Getenv("ZAD_BASE_URL")\n  client := openai.NewClientWithConfig(cfg)\n  resp, _ := client.CreateChatCompletion(context.Background(), openai.ChatCompletionRequest{\n    Model:    "auto",\n    Messages: []openai.ChatCompletionMessage{{Role: "user", Content: "أهلاً!"}},\n  })\n  fmt.Println(resp.Choices[0].Message.Content)\n}` },
+    langchain: { install: 'pip install langchain-openai',
+      inline:`from langchain_openai import ChatOpenAI\n\nllm = ChatOpenAI(\n    base_url="${URLV}",\n    api_key="${KEY}",\n    model="auto",\n)\nprint(llm.invoke("أهلاً!").content)`,
+      env:`import os\nfrom langchain_openai import ChatOpenAI\n\nllm = ChatOpenAI(\n    base_url=os.environ["ZAD_BASE_URL"],\n    api_key=os.environ["ZAD_API_KEY"],\n    model="auto",\n)\nprint(llm.invoke("أهلاً!").content)` },
+  };
+
+  function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function hl(code){
+    let h = esc(code);
+    h = h.replace(/("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')/g, '<span class="s">$1</span>');
+    h = h.replace(/(^|\n)([ \t]*)(#[^\n]*|\/\/[^\n]*)/g, '$1$2<span class="c">$3</span>');
+    h = h.replace(/\b(import|from|const|let|var|await|async|func|package|return|print|def)\b/g, '<span class="k">$1</span>');
+    return h;
+  }
+
+  let curLang = 'python';
+  const codeEl = document.getElementById('ucode'), instEl = document.getElementById('uinstall'),
+        envWrap = document.getElementById('envfile'), envEl = document.getElementById('envcode'),
+        useEnv = document.getElementById('useenv');
+  function renderUsage(){
+    const ex = EX[curLang], useE = useEnv.checked;
+    instEl.innerHTML = hl(ex.install);
+    codeEl.innerHTML = hl(useE ? ex.env : ex.inline);
+    if (useE) { envEl.innerHTML = hl(ENVFILE); envWrap.classList.remove('hide'); }
+    else { envWrap.classList.add('hide'); }
+  }
+  document.querySelectorAll('#utabs button').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('#utabs button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active'); curLang = b.dataset.lang; renderUsage();
+  }));
+  useEnv.addEventListener('change', renderUsage);
+  document.getElementById('ucopy').addEventListener('click', (e) => {
+    const txt = useEnv.checked ? EX[curLang].env : EX[curLang].inline;
+    navigator.clipboard.writeText(txt).then(() => {
+      const btn = e.target; btn.textContent = '✓ تم النسخ'; btn.classList.add('ok');
+      setTimeout(() => { btn.textContent = 'نسخ'; btn.classList.remove('ok'); }, 1300);
+    }).catch(()=>{});
+  });
+  renderUsage();
+</script>
+</body>
+</html>
