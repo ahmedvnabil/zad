@@ -3,6 +3,7 @@ import type { Request, Response } from 'express';
 import { getDb } from '../db/index.js';
 import { checkKeyHealth, checkAllKeys } from '../services/health.js';
 import { hasProvider } from '../providers/index.js';
+import { DEMO_MODE } from '../lib/demo.js';
 
 export const healthRouter = Router();
 
@@ -31,6 +32,7 @@ healthRouter.get('/', (_req: Request, res: Response) => {
   `).all() as any[];
 
   res.json({
+    demoMode: DEMO_MODE,
     platforms: platforms.map(p => ({
       platform: p.platform,
       hasProvider: hasProvider(p.platform),

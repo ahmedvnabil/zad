@@ -9,6 +9,7 @@ import {
   setEventOn,
   type TelegramEvent,
 } from '../lib/telegram.js';
+import { demoBlock } from '../lib/demo.js';
 
 export const integrationsRouter = Router();
 
@@ -32,7 +33,7 @@ integrationsRouter.get('/telegram/config', (_req: Request, res: Response) => {
 });
 
 // Save config from the UI. botToken: omit to keep current, '' to clear.
-integrationsRouter.put('/telegram/config', (req: Request, res: Response) => {
+integrationsRouter.put('/telegram/config', demoBlock, (req: Request, res: Response) => {
   const b = req.body ?? {};
   saveTelegramConfig({
     botToken: typeof b.botToken === 'string' ? b.botToken : undefined,
@@ -49,7 +50,7 @@ integrationsRouter.put('/telegram/config', (req: Request, res: Response) => {
 });
 
 // Send a test message to verify the bot token + chat id are wired correctly.
-integrationsRouter.post('/telegram/test', async (_req: Request, res: Response) => {
+integrationsRouter.post('/telegram/test', demoBlock, async (_req: Request, res: Response) => {
   if (!isTelegramEnabled()) {
     res.status(400).json({ error: { message: 'تليجرام غير مُعدّ — احفظ التوكن و chat id وفعّل الإشعارات أولاً.' } });
     return;

@@ -87,11 +87,28 @@ function LivePill() {
   )
 }
 
+function DemoBanner() {
+  const [demo, setDemo] = useState(false)
+  useEffect(() => {
+    fetch('/api/health')
+      .then((r) => r.json())
+      .then((d) => setDemo(!!d?.demoMode))
+      .catch(() => {})
+  }, [])
+  if (!demo) return null
+  return (
+    <div className="bg-warn/15 border-b border-warn/30 text-warn text-[13px] text-center py-2 px-4">
+      🧪 نسخة تجريبية عامة — البيانات تُعاد كل ساعة · لا تضع مفاتيح حقيقية حسّاسة
+    </div>
+  )
+}
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter basename={import.meta.env.BASE_URL}>
         <div className="min-h-screen bg-background">
+          <DemoBanner />
           <header className="sticky top-0 z-40 bg-background/80 backdrop-blur border-b">
             <div className="max-w-6xl mx-auto px-6 flex items-center">
               <Brand />

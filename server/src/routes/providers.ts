@@ -7,6 +7,7 @@ import {
   registerOpenAICompat,
   unregisterProvider,
 } from '../providers/index.js';
+import { assertPublicUrl } from '../lib/demo.js';
 
 export const providersRouter = Router();
 
@@ -78,6 +79,14 @@ providersRouter.post('/', (req: Request, res: Response) => {
   const baseUrl = parsed.data.baseUrl.replace(/\/+$/, '');
   const extraHeaders = parsed.data.extraHeaders;
   const timeoutMs = parsed.data.timeoutMs;
+
+  // SSRF guard: never let a user-supplied base URL point at an internal host.
+  try {
+    assertPublicUrl(baseUrl);
+  } catch (e) {
+    res.status(400).json({ error: { message: (e as Error).message, code: 'BLOCKED_URL' } });
+    return;
+  }
 
   if (hasProvider(platform)) {
     res.status(409).json({ error: { message: `المزوّد "${platform}" موجود بالفعل`, code: 'PROVIDER_EXISTS' } });
@@ -161,6 +170,14 @@ providersRouter.patch('/:platform', (req: Request, res: Response) => {
   const baseUrl = (parsed.data.baseUrl ?? row.base_url).replace(/\/+$/, '');
   const enabled = parsed.data.enabled ?? row.enabled === 1;
   const timeoutMs = parsed.data.timeoutMs ?? row.timeout_ms;
+
+  // SSRF guard on the (possibly updated) base URL.
+  try {
+    assertPublicUrl(baseUrl);
+  } catch (e) {
+    res.status(400).json({ error: { message: (e as Error).message, code: 'BLOCKED_URL' } });
+    return;
+  }
 
   db.prepare('UPDATE custom_providers SET name = ?, base_url = ?, enabled = ?, timeout_ms = ? WHERE platform = ?')
     .run(name, baseUrl, enabled ? 1 : 0, timeoutMs ?? null, platform);
