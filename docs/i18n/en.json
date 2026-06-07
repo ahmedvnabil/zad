@@ -36,6 +36,12 @@
 
   "shot": { "alt": "Zad dashboard" },
 
+  "see": {
+    "title": "See it in action",
+    "sub": "Live capture from the dashboard — automatic fallback and analytics at work.",
+    "alt": "Animated Zad demo — fallback and analytics"
+  },
+
   "problem": {
     "title": "3 barriers that keep teams from using AI",
     "cost_h": "Cost",

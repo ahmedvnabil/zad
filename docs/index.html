@@ -153,6 +153,12 @@ h1{font-size:clamp(34px,5.4vw,56px);font-weight:700;line-height:1.16;letter-spac
 .shotband{padding:var(--s-6) 0}
 .heroshot{position:relative;margin:0 auto;max-width:1000px;height:440px;border-radius:14px;
   border:1px solid var(--line);overflow:hidden;background:var(--paper-2)}
+/* in-page demo gif */
+.shead.center{text-align:center}
+.shead.center .sub{margin:var(--s-3) auto 0}
+.demogif{margin:var(--s-6) auto 0;max-width:1000px;border-radius:14px;border:1px solid var(--line);
+  overflow:hidden;background:var(--paper-2);padding:0}
+.demogif img{display:block;width:100%;height:auto}
 .heroshot img{display:block;width:100%;animation:scrollshot 20s var(--ease-in-out) infinite}
 .heroshot::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
   background:linear-gradient(180deg, var(--paper) 0%, transparent 12%, transparent 88%, var(--paper) 100%)}
@@ -396,6 +402,14 @@ resp = client.chat.completions.create(
     <div class="step rv"><div class="n">2</div><h3 data-i18n="how.s2_h">الصق المفتاح في زاد</h3><p data-i18n="how.s2_p">من صفحة المفاتيح — يتحقّق منه فوراً ويتخزّن مشفّراً. كرّر لأي عدد مزوّدين.</p></div>
     <div class="step rv"><div class="n">3</div><h3 data-i18n="how.s3_h">استخدم بمفتاح واحد</h3><p><span data-i18n="how.s3_p_pre">وجّه تطبيقاتك لـ </span><span class="mono">/v1</span><span data-i18n="how.s3_p_post"> بمفتاح زاد الموحّد — والباقي عليه.</span></p></div>
   </div>
+</div></section>
+
+<!-- DEMO GIF (in-page) -->
+<section id="see"><div class="wrap">
+  <div class="shead rv center"><h2 data-i18n="see.title">شوفه شغّال</h2><p class="sub center" data-i18n="see.sub">عرض حيّ من اللوحة — التحويل الاحتياطي والتحليلات في العمل.</p></div>
+  <figure class="demogif rv">
+    <img src="demo.gif" alt="عرض زاد متحرّك" data-i18n-attr="alt:see.alt" loading="lazy" />
+  </figure>
 </div></section>
 
 <!-- INSTALL -->
