@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>زاد · موجّه نماذج الذكاء الاصطناعي المجانية</title>
 <meta name="description" content="زاد — موجّه واحد متوافق مع OpenAI يجمع نماذج الذكاء الاصطناعي المجانية من 17+ مزوّداً. مستضاف ذاتياً، مفاتيحك مشفّرة، وبدون فاتورة شهرية." />
-<meta name="theme-color" content="#0a0e1c" />
+<meta name="theme-color" content="#ffffff" />
 <meta property="og:title" content="زاد · موجّه النماذج المجانية للذكاء الاصطناعي" />
 <meta property="og:description" content="كل نماذج الذكاء الاصطناعي المجانية في موجّه واحد متوافق مع OpenAI — مستضاف ذاتياً، مفتوح المصدر." />
 <meta property="og:image" content="og.png" />
@@ -28,25 +28,25 @@
  * pre-emit critique: P4 H5 E4 S5 R4 V4 · fixes: gate57 (no fake code chrome) · gate58 (OKLCH tokens) · emoji→line-SVG */
 
 :root{
-  /* —— synced with the demo app's dark theme (client/src/index.css .dark) —— */
-  /* surfaces — neutral gray, matching `--background` / `--card` / `--muted` */
-  --paper:        oklch(0.135 0 0);
-  --paper-2:      oklch(0.175 0 0);
-  --paper-3:      oklch(0.22 0 0);
-  --code:         oklch(0.11 0 0);
-  --ink:          oklch(0.98 0 0);
-  --ink-2:        oklch(0.82 0 0);
-  --ink-3:        oklch(0.68 0 0);
-  --line:         oklch(1 0 0 / 0.10);
-  --line-2:       oklch(1 0 0 / 0.06);
-  /* brand — cyan-only (demo) — and the semantic signals from the app */
-  --cyan:         oklch(0.74 0.13 212);
+  /* —— synced with the demo app's LIGHT theme (client/src/index.css :root) —— */
+  /* surfaces — clean white, matching --background / --card / --muted */
+  --paper:        oklch(0.995 0 0);
+  --paper-2:      oklch(1 0 0);
+  --paper-3:      oklch(0.97 0 0);
+  --code:         oklch(0.985 0 0);
+  --ink:          oklch(0.18 0 0);
+  --ink-2:        oklch(0.30 0 0);
+  --ink-3:        oklch(0.52 0 0);
+  --line:         oklch(0.92 0 0);
+  --line-2:       oklch(0.95 0 0);
+  /* brand — cyan-only on light, slightly deeper for contrast */
+  --cyan:         oklch(0.6 0.13 222);
   --brand-from:   #22d3ee;
-  --brand-to:     #0ea5c4;
-  --green:        oklch(0.72 0.15 158);
-  --info:         oklch(0.68 0.17 286);
-  --amber:        oklch(0.78 0.14 75);
-  --brand-soft:   oklch(0.74 0.13 212 / 0.16);
+  --brand-to:     #0891b2;
+  --green:        oklch(0.58 0.13 158);
+  --info:         oklch(0.55 0.18 286);
+  --amber:        oklch(0.68 0.15 70);
+  --brand-soft:   oklch(0.6 0.13 222 / 0.10);
   --grad:         linear-gradient(108deg, var(--brand-from) 0%, var(--brand-to) 100%);
   /* type — same as demo app */
   --sans: 'IBM Plex Sans Arabic', 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
@@ -75,7 +75,7 @@ a{color:inherit;text-decoration:none}
 
 /* nav */
 header{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);
-  background:oklch(0.15 0.022 264 / 0.78);border-bottom:1px solid var(--line)}
+  background:oklch(1 0 0 / 0.78);border-bottom:1px solid var(--line)}
 nav{display:flex;align-items:center;gap:var(--s-6);height:62px}
 .brand{display:flex;align-items:center;gap:9px;font-weight:600;font-size:19px;letter-spacing:-.2px}
 .navlinks{display:flex;gap:var(--s-6);margin-inline-start:auto;font-size:14.5px;color:var(--ink-2)}
@@ -86,15 +86,15 @@ nav{display:flex;align-items:center;gap:var(--s-6);height:62px}
   cursor:pointer;border-radius:11px;padding:10px 17px;border:1px solid var(--line);color:var(--ink);
   background:var(--paper-2);transition:.18s var(--ease-out);white-space:nowrap}
 .btn:hover{border-color:var(--cyan);color:var(--cyan);transform:translateY(-1px)}
-.btn.primary{background:var(--grad);color:oklch(0.16 0.02 230);border:0;font-weight:600}
-.btn.primary:hover{filter:brightness(1.08);color:oklch(0.16 0.02 230);transform:translateY(-1px)}
+.btn.primary{background:var(--grad);color:oklch(0.99 0 0);border:0;font-weight:600}
+.btn.primary:hover{filter:brightness(1.06);color:oklch(0.99 0 0);transform:translateY(-1px)}
 .btn.demo{background:transparent;border:1px solid var(--cyan);color:var(--cyan);font-weight:600;position:relative;overflow:hidden}
 .btn.demo::before{content:"";position:absolute;inset:0;background:var(--brand-soft);opacity:0;transition:.18s var(--ease-out)}
 .btn.demo:hover{transform:translateY(-1px);color:var(--cyan)}
 .btn.demo:hover::before{opacity:1}
 .btn.demo > *{position:relative;z-index:1}
-.btn .live{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px oklch(0.72 0.15 158 / 0.18);display:inline-block;animation:pulse 2s var(--ease-in-out) infinite}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 4px oklch(0.72 0.15 158 / 0.18)}50%{box-shadow:0 0 0 6px oklch(0.72 0.15 158 / 0.06)}}
+.btn .live{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px oklch(0.58 0.13 158 / 0.22);display:inline-block;animation:pulse 2s var(--ease-in-out) infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 4px oklch(0.58 0.13 158 / 0.22)}50%{box-shadow:0 0 0 6px oklch(0.58 0.13 158 / 0.08)}}
 @media(prefers-reduced-motion:reduce){.btn .live{animation:none}}
 .btn.lg{font-size:16px;padding:13px 24px}
 
@@ -105,7 +105,7 @@ nav{display:flex;align-items:center;gap:var(--s-6);height:62px}
 .langsw .pill:hover{color:var(--cyan);border-color:var(--cyan)}
 .langsw .pill svg{opacity:.7}
 .langsw .menu{position:absolute;top:calc(100% + 6px);inset-inline-end:0;background:var(--paper-2);border:1px solid var(--line);
-  border-radius:11px;padding:5px;min-width:170px;box-shadow:0 14px 32px -10px rgba(0,0,0,.5);display:none;z-index:60}
+  border-radius:11px;padding:5px;min-width:170px;box-shadow:0 14px 32px -12px rgba(0,0,0,.12);display:none;z-index:60}
 .langsw.open .menu{display:block}
 .langsw .menu button{display:flex;align-items:center;gap:10px;width:100%;text-align:start;font:inherit;font-size:13.5px;
   cursor:pointer;background:transparent;border:0;color:var(--ink);padding:9px 11px;border-radius:8px;transition:.12s}
@@ -119,8 +119,8 @@ nav{display:flex;align-items:center;gap:var(--s-6);height:62px}
 /* HERO — asymmetric split, code-forward (NOT centered) */
 .hero{position:relative;padding:var(--s-9) 0 var(--s-7);overflow:hidden}
 .hero::before{content:"";position:absolute;inset:-15% 30% auto -10%;height:520px;z-index:0;pointer-events:none;
-  filter:blur(14px);background:radial-gradient(50% 80% at 30% 0%, oklch(0.74 0.13 212 / 0.22), transparent 64%),
-  radial-gradient(40% 70% at 75% 10%, oklch(0.68 0.17 286 / 0.10), transparent 62%)}
+  filter:blur(14px);background:radial-gradient(50% 80% at 30% 0%, oklch(0.6 0.13 222 / 0.10), transparent 64%),
+  radial-gradient(40% 70% at 75% 10%, oklch(0.55 0.18 286 / 0.06), transparent 62%)}
 .hero .wrap{position:relative;z-index:1;display:grid;grid-template-columns:1.05fr .95fr;gap:var(--s-7);align-items:center}
 @media(max-width:900px){.hero .wrap{grid-template-columns:1fr;gap:var(--s-6)}}
 .tag{display:inline-flex;align-items:center;gap:var(--s-2);font-size:12.5px;color:var(--ink-2);
@@ -148,7 +148,7 @@ h1{font-size:clamp(34px,5.4vw,56px);font-weight:700;line-height:1.16;letter-spac
 .shotband{padding:var(--s-6) 0}
 .heroshot{position:relative;margin:0 auto;max-width:1000px;height:440px;border-radius:var(--r-lg);
   border:1px solid var(--line);overflow:hidden;background:var(--paper-2);
-  box-shadow:0 40px 120px -50px oklch(0.74 0.13 212 / 0.32)}
+  box-shadow:0 40px 120px -50px oklch(0.6 0.13 222 / 0.25), 0 6px 18px -10px oklch(0.18 0 0 / 0.10)}
 .heroshot img{display:block;width:100%;animation:scrollshot 20s var(--ease-in-out) infinite}
 .heroshot::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
   background:linear-gradient(180deg, var(--paper) 0%, transparent 12%, transparent 88%, var(--paper) 100%)}
@@ -240,8 +240,8 @@ h2{font-size:clamp(25px,3.6vw,34px);font-weight:700;letter-spacing:-.5px;line-he
 .final{border:1px solid var(--line);border-radius:var(--r-lg);padding:var(--s-8) var(--s-6);text-align:center;
   position:relative;overflow:hidden;background:var(--paper-2)}
 .final::before{content:"";position:absolute;inset:auto -10% -40% -10%;height:300px;filter:blur(12px);
-  background:radial-gradient(40% 100% at 40% 100%, oklch(0.74 0.13 212 / 0.18), transparent 70%),
-  radial-gradient(44% 100% at 65% 100%, oklch(0.68 0.17 286 / 0.14), transparent 70%)}
+  background:radial-gradient(40% 100% at 40% 100%, oklch(0.6 0.13 222 / 0.10), transparent 70%),
+  radial-gradient(44% 100% at 65% 100%, oklch(0.55 0.18 286 / 0.08), transparent 70%)}
 .final>*{position:relative}
 
 /* footer — statement (not 4-col link dump) */
