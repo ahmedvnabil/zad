@@ -79,9 +79,14 @@
 
   async function setLang(lang) {
     if (!SUPPORTED.includes(lang)) lang = DEFAULT;
+    const prev = window.__lang;
     try {
       const dict = await load(lang);
       apply(dict, lang);
+      // track only real switches (skip the first paint where prev is undefined)
+      if (prev && prev !== lang && typeof window.zadTrack === 'function') {
+        window.zadTrack('lang_change', { from: prev, to: lang });
+      }
     } catch (e) {
       console.error(e);
     }

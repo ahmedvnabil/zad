@@ -24,6 +24,8 @@
 <script src="js/i18n.js" defer></script>
 <!-- Umami: self-hosted, cookie-less analytics (same VPS, same privacy story as Zad itself) -->
 <script defer src="https://um.zad.tools/script.js" data-website-id="9f485f49-40fb-4cab-bdb9-ea91e0c57169"></script>
+<!-- Custom event tracking — adds listeners on key CTAs/widgets after umami loads -->
+<script src="js/track.js" defer></script>
 <style>
 /* Hallmark · redesign · macrostructure: Split-Workbench (API-first) · genre: modern-minimal · tone: technical
  * theme: zad-oklch (brand cyan→indigo, OKLCH tokens) · fonts: IBM Plex Sans Arabic + IBM Plex Mono
@@ -290,8 +292,8 @@ footer a:hover{color:var(--cyan)}
       <button type="button" data-set-lang="en" role="menuitem"><span class="flag">🇬🇧</span> English <span class="chk">✓</span></button>
     </div>
   </div>
-  <a class="btn demo" href="https://demo.zad.tools" target="_blank" rel="noopener" style="margin-inline-end:var(--s-2)"><span class="live"></span><span data-i18n="nav.demo">جرّب الديمو</span></a>
-  <a class="btn primary" href="https://github.com/ahmedvnabil/zad" target="_blank" rel="noopener" data-i18n="nav.github">GitHub ↗</a>
+  <a class="btn demo" href="https://demo.zad.tools" target="_blank" rel="noopener" data-track-source="nav" style="margin-inline-end:var(--s-2)"><span class="live"></span><span data-i18n="nav.demo">جرّب الديمو</span></a>
+  <a class="btn primary" href="https://github.com/ahmedvnabil/zad" target="_blank" rel="noopener" data-track-source="nav" data-i18n="nav.github">GitHub ↗</a>
 </nav></div></header>
 
 <main id="top">
@@ -303,8 +305,8 @@ footer a:hover{color:var(--cyan)}
     <h1><span data-i18n="hero.title_pre">كل نماذج الذكاء الاصطناعي</span> <span class="grad" data-i18n="hero.title_highlight">المجانية</span><br><span data-i18n="hero.title_end">خلف نقطة واحدة.</span></h1>
     <p class="lead" data-i18n="hero.lead">زاد بيجمع الـ free tiers من 17+ مزوّداً في endpoint واحد متوافق مع OpenAI — تحويل احتياطي تلقائي، تحليلات حيّة، وتوفير حقيقي. مفاتيحك مشفّرة على سيرفرك.</p>
     <div class="hcta">
-      <a class="btn primary lg" href="https://demo.zad.tools" target="_blank" rel="noopener"><span class="live" style="margin-inline-end:6px"></span><span data-i18n="hero.cta_demo">جرّب الديمو الحيّ</span></a>
-      <a class="btn lg" href="https://github.com/ahmedvnabil/zad" target="_blank" rel="noopener" data-i18n="hero.cta_github">⭐ GitHub</a>
+      <a class="btn primary lg" href="https://demo.zad.tools" target="_blank" rel="noopener" data-track-source="hero"><span class="live" style="margin-inline-end:6px"></span><span data-i18n="hero.cta_demo">جرّب الديمو الحيّ</span></a>
+      <a class="btn lg" href="https://github.com/ahmedvnabil/zad" target="_blank" rel="noopener" data-track-source="hero" data-i18n="hero.cta_github">⭐ GitHub</a>
     </div>
     <div class="hstrip">
       <div><b>17+</b><span data-i18n="hero.stat_providers">مزوّد مجاني</span></div>
@@ -419,8 +421,8 @@ npm run build && node server/dist/index.js
   <h2><span data-i18n="cta.title_pre">ابدأ تستخدم الذكاء الاصطناعي</span> <span class="grad" data-i18n="cta.title_highlight">بـ $0</span></h2>
   <p class="sub" style="margin:var(--s-3) auto 0;text-align:center" data-i18n="cta.sub">مفتوح المصدر، مستضاف ذاتياً، وجاهز للمجتمع العربي.</p>
   <div class="hcta" style="justify-content:center;margin-top:var(--s-6)">
-    <a class="btn primary lg" href="https://demo.zad.tools" target="_blank" rel="noopener"><span class="live" style="margin-inline-end:6px"></span><span data-i18n="cta.demo">جرّب الديمو</span></a>
-    <a class="btn lg" href="https://github.com/ahmedvnabil/zad" target="_blank" rel="noopener" data-i18n="cta.github">⭐ GitHub</a>
+    <a class="btn primary lg" href="https://demo.zad.tools" target="_blank" rel="noopener" data-track-source="final"><span class="live" style="margin-inline-end:6px"></span><span data-i18n="cta.demo">جرّب الديمو</span></a>
+    <a class="btn lg" href="https://github.com/ahmedvnabil/zad" target="_blank" rel="noopener" data-track-source="final" data-i18n="cta.github">⭐ GitHub</a>
     <a class="btn lg" href="#install" data-i18n="cta.install">دليل التشغيل</a>
   </div>
 </div></div></section>
@@ -439,8 +441,8 @@ npm run build && node server/dist/index.js
     <div style="display:flex;gap:var(--s-5);align-items:center">
       <a href="#features" data-i18n="footer.features">المميزات</a>
       <a href="#install" data-i18n="footer.install">التثبيت</a>
-      <a href="https://demo.zad.tools" target="_blank" rel="noopener" style="color:var(--cyan)"><span class="live" style="display:inline-block;margin-inline-end:5px;vertical-align:middle"></span><span data-i18n="footer.demo">الديمو الحيّ</span></a>
-      <a href="https://github.com/ahmedvnabil/zad" target="_blank" rel="noopener" data-i18n="footer.github">GitHub</a>
+      <a href="https://demo.zad.tools" target="_blank" rel="noopener" data-track-source="footer" style="color:var(--cyan)"><span class="live" style="display:inline-block;margin-inline-end:5px;vertical-align:middle"></span><span data-i18n="footer.demo">الديمو الحيّ</span></a>
+      <a href="https://github.com/ahmedvnabil/zad" target="_blank" rel="noopener" data-track-source="footer" data-i18n="footer.github">GitHub</a>
     </div>
   </div>
   <p class="attr"><span data-i18n="footer.attr_pre">مرخّص تحت MIT · مبني على ومشتقّ من مشروع </span><a href="https://github.com/tashfeenahmed/freellmapi" target="_blank" rel="noopener" data-i18n="footer.attr_link">freellmapi</a><span data-i18n="footer.attr_post"> لـ Tashfeen Ahmed — شكراً للعمل الأصلي.</span></p>
