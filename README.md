@@ -42,6 +42,8 @@ _One OpenAI-compatible endpoint that unifies free LLM tiers from 17+ providers �
 - 🔐 **مفاتيح مشفّرة at-rest** + فحص صحة دوري + تعطيل تلقائي للمفاتيح الفاشلة.
 - 🟢 **واجهة عربية كاملة RTL** بهوية حديثة، فاتح/داكن، بدون build step معقّد.
 
+-  [Demo](https://pro.zad.tools)
+
 ## 🚀 التشغيل السريع (Self-host)
 
 > المتطلبات: **Node.js ≥ 20** + git. الخطوة الوحيدة المختلفة بين الأنظمة هي تثبيتهما:
