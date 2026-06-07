@@ -11,6 +11,7 @@
     "usage": "Usage",
     "how": "How it works",
     "install": "Install",
+    "demo": "Try the demo",
     "github": "GitHub ↗",
     "lang_label": "Language"
   },
@@ -24,6 +25,8 @@
     "lead": "Zad puts the free tiers of 17+ providers behind a single OpenAI-compatible endpoint — automatic fallback, live analytics, real savings. Your keys, encrypted on your own server.",
     "cta_primary": "⭐ Start on GitHub",
     "cta_secondary": "Install guide",
+    "cta_demo": "Try the live demo",
+    "cta_github": "⭐ GitHub",
     "stat_providers": "free providers",
     "stat_models": "models · one key",
     "stat_cost": "monthly cost",
@@ -103,12 +106,16 @@
     "title_highlight": "for $0",
     "sub": "Open source, self-hosted, ready for global and Arabic-speaking communities.",
     "primary": "⭐ Star on GitHub",
-    "secondary": "Install guide"
+    "secondary": "Install guide",
+    "demo": "Try the demo",
+    "github": "⭐ GitHub",
+    "install": "Install guide"
   },
 
   "footer": {
     "features": "Features",
     "install": "Install",
+    "demo": "Live demo",
     "github": "GitHub",
     "attr_pre": "MIT-licensed · built on and derived from ",
     "attr_link": "freellmapi",

@@ -100,6 +100,14 @@
       if (!b) return;
       e.preventDefault();
       setLang(b.getAttribute('data-set-lang'));
+      // also close the open dropdown if any
+      document.querySelectorAll('.langsw.open').forEach((el) => el.classList.remove('open'));
+    });
+
+    // react to manual #en / #ar in the URL bar (no reload needed)
+    window.addEventListener('hashchange', () => {
+      const m = location.hash.match(/^#(ar|en)$/);
+      if (m) setLang(m[1]);
     });
   });
 })();

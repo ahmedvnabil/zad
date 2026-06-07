@@ -14,7 +14,9 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230a0e1c'/%3E%3Cg transform='translate(2.6 2.6) scale(0.84)' stroke='%2334d8ea' stroke-width='2.4' stroke-linecap='round' fill='none'%3E%3Cpath d='M4 7 C 11 7, 12 16, 18.5 16'/%3E%3Cpath d='M4 16 C 9 16, 12 16, 18.5 16'/%3E%3Cpath d='M4 25 C 11 25, 12 16, 18.5 16'/%3E%3Cpath d='M18.5 16 H 26' stroke-width='3.1'/%3E%3Ccircle cx='27.4' cy='16' r='2.3' fill='%2334d8ea' stroke='none'/%3E%3C/g%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<!-- Geist Mono — same font the demo app uses, for code consistency -->
+<link href="https://cdn.jsdelivr.net/npm/geist@1.4.0/dist/fonts/geist-mono/index.css" rel="stylesheet" />
 <!-- i18n: alternate language hints for SEO + crawlers -->
 <link rel="alternate" hreflang="ar" href="https://zad.tools/#ar" />
 <link rel="alternate" hreflang="en" href="https://zad.tools/#en" />
@@ -26,26 +28,29 @@
  * pre-emit critique: P4 H5 E4 S5 R4 V4 · fixes: gate57 (no fake code chrome) · gate58 (OKLCH tokens) · emoji→line-SVG */
 
 :root{
-  /* paper + ink (OKLCH) */
-  --paper:        oklch(0.15 0.022 264);
-  --paper-2:      oklch(0.19 0.028 264);
-  --paper-3:      oklch(0.24 0.032 264);
-  --code:         oklch(0.12 0.018 264);
-  --ink:          oklch(0.96 0.008 250);
-  --ink-2:        oklch(0.80 0.018 255);
-  --ink-3:        oklch(0.64 0.022 258);
-  --line:         oklch(1 0 0 / 0.09);
-  --line-2:       oklch(1 0 0 / 0.05);
-  /* brand */
-  --cyan:         oklch(0.83 0.13 200);
-  --indigo:       oklch(0.60 0.20 274);
-  --green:        oklch(0.80 0.15 162);
-  --amber:        oklch(0.84 0.13 80);
-  --brand-soft:   oklch(0.60 0.20 274 / 0.16);
-  --grad:         linear-gradient(108deg, var(--cyan) 0%, oklch(0.66 0.18 250) 52%, var(--indigo) 100%);
-  /* type */
-  --sans: 'IBM Plex Sans Arabic', system-ui, sans-serif;
-  --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  /* —— synced with the demo app's dark theme (client/src/index.css .dark) —— */
+  /* surfaces — neutral gray, matching `--background` / `--card` / `--muted` */
+  --paper:        oklch(0.135 0 0);
+  --paper-2:      oklch(0.175 0 0);
+  --paper-3:      oklch(0.22 0 0);
+  --code:         oklch(0.11 0 0);
+  --ink:          oklch(0.98 0 0);
+  --ink-2:        oklch(0.82 0 0);
+  --ink-3:        oklch(0.68 0 0);
+  --line:         oklch(1 0 0 / 0.10);
+  --line-2:       oklch(1 0 0 / 0.06);
+  /* brand — cyan-only (demo) — and the semantic signals from the app */
+  --cyan:         oklch(0.74 0.13 212);
+  --brand-from:   #22d3ee;
+  --brand-to:     #0ea5c4;
+  --green:        oklch(0.72 0.15 158);
+  --info:         oklch(0.68 0.17 286);
+  --amber:        oklch(0.78 0.14 75);
+  --brand-soft:   oklch(0.74 0.13 212 / 0.16);
+  --grad:         linear-gradient(108deg, var(--brand-from) 0%, var(--brand-to) 100%);
+  /* type — same as demo app */
+  --sans: 'IBM Plex Sans Arabic', 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+  --mono: 'Geist Mono Variable', 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   /* scale (4pt) */
   --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:24px; --s-6:32px; --s-7:48px; --s-8:64px; --s-9:96px;
   --r:14px; --r-lg:20px;
@@ -54,7 +59,7 @@
   --ease-in-out: cubic-bezier(.5,0,.2,1);
   --dur: .55s;
   /* code syntax */
-  --c-key: var(--cyan); --c-str: oklch(0.85 0.13 150); --c-com: oklch(0.55 0.02 260);
+  --c-key: var(--cyan); --c-str: var(--green); --c-com: oklch(0.55 0 0);
 }
 *{box-sizing:border-box;margin:0}
 html,body{overflow-x:clip}
@@ -81,8 +86,16 @@ nav{display:flex;align-items:center;gap:var(--s-6);height:62px}
   cursor:pointer;border-radius:11px;padding:10px 17px;border:1px solid var(--line);color:var(--ink);
   background:var(--paper-2);transition:.18s var(--ease-out);white-space:nowrap}
 .btn:hover{border-color:var(--cyan);color:var(--cyan);transform:translateY(-1px)}
-.btn.primary{background:var(--grad);color:oklch(0.16 0.03 264);border:0;font-weight:600}
-.btn.primary:hover{filter:brightness(1.07);color:oklch(0.16 0.03 264)}
+.btn.primary{background:var(--grad);color:oklch(0.16 0.02 230);border:0;font-weight:600}
+.btn.primary:hover{filter:brightness(1.08);color:oklch(0.16 0.02 230);transform:translateY(-1px)}
+.btn.demo{background:transparent;border:1px solid var(--cyan);color:var(--cyan);font-weight:600;position:relative;overflow:hidden}
+.btn.demo::before{content:"";position:absolute;inset:0;background:var(--brand-soft);opacity:0;transition:.18s var(--ease-out)}
+.btn.demo:hover{transform:translateY(-1px);color:var(--cyan)}
+.btn.demo:hover::before{opacity:1}
+.btn.demo > *{position:relative;z-index:1}
+.btn .live{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px oklch(0.72 0.15 158 / 0.18);display:inline-block;animation:pulse 2s var(--ease-in-out) infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 4px oklch(0.72 0.15 158 / 0.18)}50%{box-shadow:0 0 0 6px oklch(0.72 0.15 158 / 0.06)}}
+@media(prefers-reduced-motion:reduce){.btn .live{animation:none}}
 .btn.lg{font-size:16px;padding:13px 24px}
 
 /* language switcher */
@@ -106,8 +119,8 @@ nav{display:flex;align-items:center;gap:var(--s-6);height:62px}
 /* HERO — asymmetric split, code-forward (NOT centered) */
 .hero{position:relative;padding:var(--s-9) 0 var(--s-7);overflow:hidden}
 .hero::before{content:"";position:absolute;inset:-15% 30% auto -10%;height:520px;z-index:0;pointer-events:none;
-  filter:blur(14px);background:radial-gradient(50% 80% at 30% 0%, oklch(0.60 0.20 274 / 0.22), transparent 64%),
-  radial-gradient(40% 70% at 75% 10%, oklch(0.83 0.13 200 / 0.12), transparent 62%)}
+  filter:blur(14px);background:radial-gradient(50% 80% at 30% 0%, oklch(0.74 0.13 212 / 0.22), transparent 64%),
+  radial-gradient(40% 70% at 75% 10%, oklch(0.68 0.17 286 / 0.10), transparent 62%)}
 .hero .wrap{position:relative;z-index:1;display:grid;grid-template-columns:1.05fr .95fr;gap:var(--s-7);align-items:center}
 @media(max-width:900px){.hero .wrap{grid-template-columns:1fr;gap:var(--s-6)}}
 .tag{display:inline-flex;align-items:center;gap:var(--s-2);font-size:12.5px;color:var(--ink-2);
@@ -135,7 +148,7 @@ h1{font-size:clamp(34px,5.4vw,56px);font-weight:700;line-height:1.16;letter-spac
 .shotband{padding:var(--s-6) 0}
 .heroshot{position:relative;margin:0 auto;max-width:1000px;height:440px;border-radius:var(--r-lg);
   border:1px solid var(--line);overflow:hidden;background:var(--paper-2);
-  box-shadow:0 40px 120px -50px oklch(0.60 0.20 274 / 0.35)}
+  box-shadow:0 40px 120px -50px oklch(0.74 0.13 212 / 0.32)}
 .heroshot img{display:block;width:100%;animation:scrollshot 20s var(--ease-in-out) infinite}
 .heroshot::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
   background:linear-gradient(180deg, var(--paper) 0%, transparent 12%, transparent 88%, var(--paper) 100%)}
@@ -170,7 +183,7 @@ h2{font-size:clamp(25px,3.6vw,34px);font-weight:700;letter-spacing:-.5px;line-he
 @media(max-width:880px){.feat{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.feat{grid-template-columns:1fr}}
 .fcard{border:1px solid var(--line);border-radius:var(--r);padding:var(--s-5);background:var(--paper-2);transition:.2s var(--ease-out)}
-.fcard:hover{border-color:oklch(0.60 0.20 274 / 0.45);transform:translateY(-3px)}
+.fcard:hover{border-color:oklch(0.74 0.13 212 / 0.5);transform:translateY(-3px)}
 .fic{width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:10px;
   background:var(--brand-soft);color:var(--cyan);margin-bottom:var(--s-4);border:1px solid var(--line)}
 .fcard h3{font-size:16.5px;margin-bottom:var(--s-1)}
@@ -185,7 +198,7 @@ h2{font-size:clamp(25px,3.6vw,34px);font-weight:700;letter-spacing:-.5px;line-he
 .utabs button{font:inherit;font-size:14px;cursor:pointer;color:var(--ink-3);background:transparent;
   border:1px solid transparent;border-radius:9px;padding:7px 15px;transition:.15s var(--ease-out);white-space:nowrap}
 .utabs button:hover{color:var(--ink)}
-.utabs button.active{color:var(--cyan);background:var(--brand-soft);border-color:oklch(0.60 0.20 274 / 0.35)}
+.utabs button.active{color:var(--cyan);background:var(--brand-soft);border-color:oklch(0.74 0.13 212 / 0.4)}
 .uctrl{display:flex;align-items:center;justify-content:space-between;gap:var(--s-3);padding:11px 18px;border-bottom:1px solid var(--line)}
 .switch{display:inline-flex;align-items:center;gap:9px;font-size:13.5px;color:var(--ink-2);cursor:pointer;user-select:none}
 .switch input{appearance:none;-webkit-appearance:none;width:38px;height:21px;border-radius:999px;
@@ -227,8 +240,8 @@ h2{font-size:clamp(25px,3.6vw,34px);font-weight:700;letter-spacing:-.5px;line-he
 .final{border:1px solid var(--line);border-radius:var(--r-lg);padding:var(--s-8) var(--s-6);text-align:center;
   position:relative;overflow:hidden;background:var(--paper-2)}
 .final::before{content:"";position:absolute;inset:auto -10% -40% -10%;height:300px;filter:blur(12px);
-  background:radial-gradient(40% 100% at 40% 100%, oklch(0.83 0.13 200 / 0.14), transparent 70%),
-  radial-gradient(44% 100% at 65% 100%, oklch(0.60 0.20 274 / 0.20), transparent 70%)}
+  background:radial-gradient(40% 100% at 40% 100%, oklch(0.74 0.13 212 / 0.18), transparent 70%),
+  radial-gradient(44% 100% at 65% 100%, oklch(0.68 0.17 286 / 0.14), transparent 70%)}
 .final>*{position:relative}
 
 /* footer — statement (not 4-col link dump) */
@@ -247,7 +260,7 @@ footer a:hover{color:var(--cyan)}
 <body>
 
 <svg width="0" height="0" style="position:absolute"><defs>
-  <linearGradient id="bg" x1="4" y1="6" x2="28" y2="26" gradientUnits="userSpaceOnUse"><stop stop-color="#34d8ea"/><stop offset="1" stop-color="#5b50e8"/></linearGradient>
+  <linearGradient id="bg" x1="4" y1="6" x2="28" y2="26" gradientUnits="userSpaceOnUse"><stop stop-color="#22d3ee"/><stop offset="1" stop-color="#0ea5c4"/></linearGradient>
 </defs></svg>
 
 <header><div class="wrap"><nav>
@@ -275,6 +288,7 @@ footer a:hover{color:var(--cyan)}
       <button type="button" data-set-lang="en" role="menuitem"><span class="flag">🇬🇧</span> English <span class="chk">✓</span></button>
     </div>
   </div>
+  <a class="btn demo" href="https://demo.zad.tools" target="_blank" rel="noopener" style="margin-inline-end:var(--s-2)"><span class="live"></span><span data-i18n="nav.demo">جرّب الديمو</span></a>
   <a class="btn primary" href="https://github.com/ahmedvnabil/zad" target="_blank" rel="noopener" data-i18n="nav.github">GitHub ↗</a>
 </nav></div></header>
 
@@ -287,8 +301,8 @@ footer a:hover{color:var(--cyan)}
     <h1><span data-i18n="hero.title_pre">كل نماذج الذكاء الاصطناعي</span> <span class="grad" data-i18n="hero.title_highlight">المجانية</span><br><span data-i18n="hero.title_end">خلف نقطة واحدة.</span></h1>
     <p class="lead" data-i18n="hero.lead">زاد بيجمع الـ free tiers من 17+ مزوّداً في endpoint واحد متوافق مع OpenAI — تحويل احتياطي تلقائي، تحليلات حيّة، وتوفير حقيقي. مفاتيحك مشفّرة على سيرفرك.</p>
     <div class="hcta">
-      <a class="btn primary lg" href="https://github.com/ahmedvnabil/zad" target="_blank" rel="noopener" data-i18n="hero.cta_primary">⭐ ابدأ على GitHub</a>
-      <a class="btn lg" href="#install" data-i18n="hero.cta_secondary">دليل التثبيت</a>
+      <a class="btn primary lg" href="https://demo.zad.tools" target="_blank" rel="noopener"><span class="live" style="margin-inline-end:6px"></span><span data-i18n="hero.cta_demo">جرّب الديمو الحيّ</span></a>
+      <a class="btn lg" href="https://github.com/ahmedvnabil/zad" target="_blank" rel="noopener" data-i18n="hero.cta_github">⭐ GitHub</a>
     </div>
     <div class="hstrip">
       <div><b>17+</b><span data-i18n="hero.stat_providers">مزوّد مجاني</span></div>
@@ -403,8 +417,9 @@ npm run build && node server/dist/index.js
   <h2><span data-i18n="cta.title_pre">ابدأ تستخدم الذكاء الاصطناعي</span> <span class="grad" data-i18n="cta.title_highlight">بـ $0</span></h2>
   <p class="sub" style="margin:var(--s-3) auto 0;text-align:center" data-i18n="cta.sub">مفتوح المصدر، مستضاف ذاتياً، وجاهز للمجتمع العربي.</p>
   <div class="hcta" style="justify-content:center;margin-top:var(--s-6)">
-    <a class="btn primary lg" href="https://github.com/ahmedvnabil/zad" target="_blank" rel="noopener" data-i18n="cta.primary">⭐ على GitHub</a>
-    <a class="btn lg" href="#install" data-i18n="cta.secondary">دليل التشغيل</a>
+    <a class="btn primary lg" href="https://demo.zad.tools" target="_blank" rel="noopener"><span class="live" style="margin-inline-end:6px"></span><span data-i18n="cta.demo">جرّب الديمو</span></a>
+    <a class="btn lg" href="https://github.com/ahmedvnabil/zad" target="_blank" rel="noopener" data-i18n="cta.github">⭐ GitHub</a>
+    <a class="btn lg" href="#install" data-i18n="cta.install">دليل التشغيل</a>
   </div>
 </div></div></section>
 
@@ -419,9 +434,10 @@ npm run build && node server/dist/index.js
         <circle cx="27.4" cy="16" r="2.3" fill="url(#bg)"/></svg>
       زاد
     </a>
-    <div style="display:flex;gap:var(--s-5)">
+    <div style="display:flex;gap:var(--s-5);align-items:center">
       <a href="#features" data-i18n="footer.features">المميزات</a>
       <a href="#install" data-i18n="footer.install">التثبيت</a>
+      <a href="https://demo.zad.tools" target="_blank" rel="noopener" style="color:var(--cyan)"><span class="live" style="display:inline-block;margin-inline-end:5px;vertical-align:middle"></span><span data-i18n="footer.demo">الديمو الحيّ</span></a>
       <a href="https://github.com/ahmedvnabil/zad" target="_blank" rel="noopener" data-i18n="footer.github">GitHub</a>
     </div>
   </div>

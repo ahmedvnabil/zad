@@ -11,6 +11,7 @@
     "usage": "الاستخدام",
     "how": "كيف يعمل",
     "install": "التثبيت",
+    "demo": "جرّب الديمو",
     "github": "GitHub ↗",
     "lang_label": "اللغة"
   },
@@ -24,6 +25,8 @@
     "lead": "زاد بيجمع الـ free tiers من 17+ مزوّداً في endpoint واحد متوافق مع OpenAI — تحويل احتياطي تلقائي، تحليلات حيّة، وتوفير حقيقي. مفاتيحك مشفّرة على سيرفرك.",
     "cta_primary": "⭐ ابدأ على GitHub",
     "cta_secondary": "دليل التثبيت",
+    "cta_demo": "جرّب الديمو الحيّ",
+    "cta_github": "⭐ GitHub",
     "stat_providers": "مزوّد مجاني",
     "stat_models": "نموذج بمفتاح واحد",
     "stat_cost": "تكلفة شهرية",
@@ -103,12 +106,16 @@
     "title_highlight": "بـ $0",
     "sub": "مفتوح المصدر، مستضاف ذاتياً، وجاهز للمجتمع العربي.",
     "primary": "⭐ على GitHub",
-    "secondary": "دليل التشغيل"
+    "secondary": "دليل التشغيل",
+    "demo": "جرّب الديمو",
+    "github": "⭐ GitHub",
+    "install": "دليل التشغيل"
   },
 
   "footer": {
     "features": "المميزات",
     "install": "التثبيت",
+    "demo": "الديمو الحيّ",
     "github": "GitHub",
     "attr_pre": "مرخّص تحت MIT · مبني على ومشتقّ من مشروع ",
     "attr_link": "freellmapi",
