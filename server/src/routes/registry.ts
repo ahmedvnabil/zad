@@ -98,6 +98,61 @@ registryRouter.get('/providers/:id', async (req: Request, res: Response) => {
   }
 });
 
+/**
+ * Emit a ready-to-paste snippet for opencode (https://opencode.ai) — that lets
+ * opencode talk to this zad instance as a single unified provider. Users paste
+ * it into ~/.config/opencode/opencode.json and they get the best of both worlds:
+ * opencode's UX + zad's 140-provider fallback routing.
+ */
+registryRouter.get('/opencode-snippet', (req: Request, res: Response) => {
+  // pick the public-ish base URL the client called us on
+  const host = req.get('x-forwarded-host') || req.get('host') || 'localhost:3001';
+  const proto = (req.get('x-forwarded-proto') || req.protocol || 'http').split(',')[0];
+  const baseURL = `${proto}://${host}/v1`;
+
+  // grab a snapshot of enabled models in this zad so opencode shows them in its picker
+  const db = getDb();
+  const rows = db.prepare(`
+    SELECT platform, model_id, display_name, context_window
+    FROM models
+    WHERE enabled = 1
+    ORDER BY platform, model_id
+  `).all() as any[];
+
+  const models: Record<string, any> = {};
+  for (const r of rows) {
+    const id = `${r.platform}/${r.model_id}`;
+    models[id] = {
+      name: r.display_name || r.model_id,
+      ...(r.context_window ? { limit: { context: r.context_window } } : {}),
+    };
+  }
+
+  const config = {
+    provider: {
+      zad: {
+        npm: '@ai-sdk/openai-compatible',
+        name: 'Zad — Free LLM router',
+        options: { baseURL },
+        models,
+      },
+    },
+  };
+
+  res.json({
+    ok: true,
+    baseURL,
+    model_count: rows.length,
+    instructions: [
+      'Get your zad unified key from /api/settings/api-key',
+      'Set it as OPENAI_API_KEY before running opencode (any name works; opencode reads it from env)',
+      'Paste the `config` object into ~/.config/opencode/opencode.json',
+      'Run opencode and pick any zad/* model — fallback and analytics happen on the zad side',
+    ],
+    config,
+  });
+});
+
 // --- writes (gated) ---
 
 registryRouter.post('/refresh', async (req: Request, res: Response) => {

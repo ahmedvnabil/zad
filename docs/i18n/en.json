@@ -68,6 +68,10 @@
     "telegram_p": "New key · provider down/recovered · daily digest · error spikes — configured from the UI.",
     "custom_h": "Custom providers",
     "custom_p": "Add any OpenAI-compatible service and edit its URL live (Ollama · vLLM · LM Studio).",
+    "registry_h": "Discover 140 providers",
+    "registry_p": "The Discover tab browses 5,140 models from models.dev — one click to import any provider with all its models.",
+    "opencode_h": "Works with opencode",
+    "opencode_p": "GET /api/registry/opencode-snippet → paste into opencode.json → every model in your zad becomes available in opencode.",
     "more_keys": "Keys encrypted at rest",
     "more_rtl": "Full Arabic RTL UI",
     "more_sqlite": "Self-hosted — local SQLite"

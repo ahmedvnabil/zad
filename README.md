@@ -44,7 +44,8 @@
 ### ✨ المميزات
 
 - 🔌 **متوافق مع OpenAI** — بدّل `base_url` بس، أي SDK أو أداة بتشتغل على طول.
-- 🌊 **17+ مزوّد · 100+ نموذج مجاني** بمفتاح واحد (Groq · Cerebras · SambaNova · NVIDIA · Mistral · OpenRouter · GitHub Models · Cohere · Cloudflare · Google · Zhipu · Ollama Cloud وغيرهم).
+- 🧭 **140 مزوّد · 5,140 نموذج جاهز للاكتشاف** عبر `/api/registry` (مبني على [models.dev](https://models.dev)، نفس مصدر [opencode](https://opencode.ai)).
+- 🌊 **17+ مزوّد · 100+ نموذج مجاني** مفعّل افتراضياً (Groq · Cerebras · SambaNova · NVIDIA · Mistral · OpenRouter · GitHub Models · Cohere · Cloudflare · Google · Zhipu · Ollama Cloud وغيرهم).
 - 🔁 **تحويل احتياطي تلقائي** — يرتّب النماذج بالذكاء/السرعة/الميزانية ويقفز للي بعده عند الفشل أو تجاوز الحد.
 - 💸 **تسعير حقيقي + حساب التوفير** — من جدول [LiteLLM](https://github.com/BerriAI/litellm)، يوريك كام كنت هتدفع لو مدفوع.
 - 📊 **تحديثات حيّة (SSE)** — الطلبات، زمن الاستجابة، التوكنز، الأخطاء — تتحدّث لحظياً.
@@ -177,7 +178,8 @@ Same models. Same quality. Different plumbing. The free tiers carrying that $0 a
 ### ✨ Features
 
 - 🔌 **OpenAI-compatible** — swap `base_url`, any SDK or tool works immediately.
-- 🌊 **17+ providers · 100+ free models** behind one key (Groq · Cerebras · SambaNova · NVIDIA · Mistral · OpenRouter · GitHub Models · Cohere · Cloudflare · Google · Zhipu · Ollama Cloud and more).
+- 🧭 **140 providers · 5,140 models ready to discover** via `/api/registry` (powered by [models.dev](https://models.dev), the same source that backs [opencode](https://opencode.ai)).
+- 🌊 **17+ providers · 100+ free models** enabled by default (Groq · Cerebras · SambaNova · NVIDIA · Mistral · OpenRouter · GitHub Models · Cohere · Cloudflare · Google · Zhipu · Ollama Cloud and more).
 - 🔁 **Automatic fallback** — ranks models by intelligence/speed/budget, falls over on failure or rate-limit.
 - 💸 **Real pricing + savings analytics** — from [LiteLLM](https://github.com/BerriAI/litellm), shows what you'd have paid on a paid API.
 - 📊 **Live updates (SSE)** — requests, latency, tokens, errors — all in real time.

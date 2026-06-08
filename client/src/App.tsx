@@ -11,6 +11,7 @@ import AnalyticsPage from '@/pages/AnalyticsPage'
 import RequestsPage from '@/pages/RequestsPage'
 import OverviewPage from '@/pages/OverviewPage'
 import NotificationsPage from '@/pages/NotificationsPage'
+import DiscoverPage from '@/pages/DiscoverPage'
 
 const queryClient = new QueryClient()
 
@@ -116,6 +117,7 @@ function App() {
                 <NavItem to="/overview">نظرة عامة</NavItem>
                 <NavItem to="/playground">ساحة التجربة</NavItem>
                 <NavItem to="/keys">المفاتيح</NavItem>
+                <NavItem to="/discover">اكتشف</NavItem>
                 <NavItem to="/fallback">التحويل الاحتياطي</NavItem>
                 <NavItem to="/analytics">التحليلات</NavItem>
                 <NavItem to="/requests">الطلبات</NavItem>
@@ -133,6 +135,7 @@ function App() {
               <Route path="/overview" element={<OverviewPage />} />
               <Route path="/playground" element={<PlaygroundPage />} />
               <Route path="/keys" element={<KeysPage />} />
+              <Route path="/discover" element={<DiscoverPage />} />
               <Route path="/fallback" element={<FallbackPage />} />
               <Route path="/analytics" element={<AnalyticsPage />} />
               <Route path="/requests" element={<RequestsPage />} />
