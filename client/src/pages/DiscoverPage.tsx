@@ -5,7 +5,10 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Compass, Plus, Search, BookOpen, Check, Loader2, AlertCircle } from 'lucide-react'
+import {
+  Compass, Plus, Search, BookOpen, Check, Loader2, AlertCircle,
+  X, Brain, Wrench, Image as ImageIcon, Zap, ExternalLink,
+} from 'lucide-react'
 
 interface ProviderSummary {
   id: string
@@ -16,6 +19,29 @@ interface ProviderSummary {
   env: string[]
   doc?: string
   api?: string | null
+}
+
+interface RegistryModel {
+  id: string
+  name?: string
+  family?: string
+  reasoning?: boolean
+  tool_call?: boolean
+  attachment?: boolean
+  open_weights?: boolean
+  knowledge?: string
+  limit?: { context?: number; output?: number }
+  cost?: { input?: number; output?: number }
+  modalities?: { input?: string[]; output?: string[] }
+}
+
+interface ProviderDetail {
+  id: string
+  name: string
+  env?: string[]
+  doc?: string
+  api?: string | null
+  models: Record<string, RegistryModel>
 }
 
 interface RegistryStats {
@@ -33,8 +59,16 @@ function formatAge(s: number | null) {
   return `${Math.floor(s / 86400)}ي`
 }
 
+function ctxLabel(n?: number) {
+  if (!n) return '—'
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(0)}M`
+  if (n >= 1000) return `${Math.round(n / 1000)}K`
+  return `${n}`
+}
+
 export default function DiscoverPage() {
   const [query, setQuery] = useState('')
+  const [openId, setOpenId] = useState<string | null>(null)
   const qc = useQueryClient()
   const [toast, setToast] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null)
   const [importingId, setImportingId] = useState<string | null>(null)
@@ -51,7 +85,6 @@ export default function DiscoverPage() {
     staleTime: 5 * 60_000,
   })
 
-  // which platforms are already installed locally? (mark them with a check)
   const installed = useQuery<{ platform: string }[]>({
     queryKey: ['providers'],
     queryFn: () => fetch('/api/providers').then((r) => r.json()),
@@ -60,6 +93,13 @@ export default function DiscoverPage() {
     () => new Set((installed.data || []).map((p) => p.platform)),
     [installed.data]
   )
+
+  // detail for the open modal
+  const detail = useQuery<ProviderDetail>({
+    queryKey: ['registry-provider', openId],
+    queryFn: () => fetch(`/api/registry/providers/${openId}`).then((r) => r.json()),
+    enabled: !!openId,
+  })
 
   const importMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -78,6 +118,7 @@ export default function DiscoverPage() {
       qc.invalidateQueries({ queryKey: ['providers'] })
       qc.invalidateQueries({ queryKey: ['models'] })
       setImportingId(null)
+      setOpenId(null)
       setTimeout(() => setToast(null), 3000)
     },
     onError: (e: Error) => {
@@ -94,6 +135,11 @@ export default function DiscoverPage() {
     return all.filter((p) => p.id.toLowerCase().includes(q) || p.name.toLowerCase().includes(q))
   }, [providers.data, query])
 
+  const openSummary = useMemo(
+    () => (providers.data || []).find((p) => p.id === openId),
+    [providers.data, openId]
+  )
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -105,30 +151,10 @@ export default function DiscoverPage() {
 
       {/* Stats strip */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold tabular-nums">{stats.data?.providers ?? '—'}</div>
-            <div className="text-xs text-muted-foreground">مزوّد متاح</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold tabular-nums">{stats.data?.models ?? '—'}</div>
-            <div className="text-xs text-muted-foreground">نموذج إجمالاً</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold tabular-nums">{installedSet.size}</div>
-            <div className="text-xs text-muted-foreground">مثبّت عندك</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold">{formatAge(stats.data?.age_seconds ?? null)}</div>
-            <div className="text-xs text-muted-foreground">عمر الفهرس</div>
-          </CardContent>
-        </Card>
+        <Card><CardContent className="p-4"><div className="text-2xl font-bold tabular-nums">{stats.data?.providers ?? '—'}</div><div className="text-xs text-muted-foreground">مزوّد متاح</div></CardContent></Card>
+        <Card><CardContent className="p-4"><div className="text-2xl font-bold tabular-nums">{stats.data?.models ?? '—'}</div><div className="text-xs text-muted-foreground">نموذج إجمالاً</div></CardContent></Card>
+        <Card><CardContent className="p-4"><div className="text-2xl font-bold tabular-nums">{installedSet.size}</div><div className="text-xs text-muted-foreground">مثبّت عندك</div></CardContent></Card>
+        <Card><CardContent className="p-4"><div className="text-2xl font-bold">{formatAge(stats.data?.age_seconds ?? null)}</div><div className="text-xs text-muted-foreground">عمر الفهرس</div></CardContent></Card>
       </div>
 
       {/* Search */}
@@ -142,112 +168,58 @@ export default function DiscoverPage() {
         />
       </div>
 
-      {/* Toast */}
       {toast && (
-        <div
-          className={`text-sm rounded-md border px-3 py-2 ${
-            toast.kind === 'ok'
-              ? 'bg-success/10 border-success/30 text-success'
-              : 'bg-destructive/10 border-destructive/30 text-destructive'
-          }`}
-        >
+        <div className={`text-sm rounded-md border px-3 py-2 ${toast.kind === 'ok' ? 'bg-success/10 border-success/30 text-success' : 'bg-destructive/10 border-destructive/30 text-destructive'}`}>
           {toast.text}
         </div>
       )}
 
-      {/* Providers grid */}
-      {providers.isLoading && (
-        <div className="text-center py-12 text-muted-foreground text-sm">جاري تحميل الفهرس…</div>
-      )}
-      {providers.isError && (
-        <div className="text-center py-12 text-destructive text-sm">
-          <AlertCircle className="inline size-4 me-2" />
-          تعذّر تحميل الفهرس
-        </div>
-      )}
+      {providers.isLoading && <div className="text-center py-12 text-muted-foreground text-sm">جاري تحميل الفهرس…</div>}
+      {providers.isError && <div className="text-center py-12 text-destructive text-sm"><AlertCircle className="inline size-4 me-2" />تعذّر تحميل الفهرس</div>}
 
+      {/* Providers grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
         {list.map((p) => {
           const isInstalled = installedSet.has(p.id)
           const isImporting = importingId === p.id
           const canQuickImport = p.is_openai_compat
           return (
-            <Card key={p.id} className="overflow-hidden">
+            <Card
+              key={p.id}
+              className="overflow-hidden cursor-pointer hover:border-brand/40 transition-colors"
+              onClick={() => setOpenId(p.id)}
+            >
               <CardContent className="p-4 space-y-3">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <div className="font-semibold truncate">{p.name}</div>
-                    <div className="text-xs text-muted-foreground font-mono truncate" dir="ltr">
-                      {p.id}
-                    </div>
+                    <div className="text-xs text-muted-foreground font-mono truncate" dir="ltr">{p.id}</div>
                   </div>
                   {isInstalled && (
-                    <Badge variant="outline" className="bg-success/10 border-success/30 text-success text-[10px]">
-                      <Check className="size-3 me-1" />
-                      مثبّت
-                    </Badge>
+                    <Badge variant="outline" className="bg-success/10 border-success/30 text-success text-[10px]"><Check className="size-3 me-1" />مثبّت</Badge>
                   )}
                 </div>
-
                 <div className="flex flex-wrap gap-1.5 text-[11px]">
-                  <Badge variant="outline" className="tabular-nums">
-                    {p.model_count} نموذج
-                  </Badge>
-                  {p.is_openai_compat && (
-                    <Badge variant="outline" className="bg-brand/10 border-brand/30 text-brand">
-                      OpenAI-compatible
-                    </Badge>
-                  )}
-                  {p.env[0] && (
-                    <Badge variant="outline" className="font-mono text-[10px]" dir="ltr">
-                      {p.env[0]}
-                    </Badge>
-                  )}
+                  <Badge variant="outline" className="tabular-nums">{p.model_count} نموذج</Badge>
+                  {p.is_openai_compat && <Badge variant="outline" className="bg-brand/10 border-brand/30 text-brand">OpenAI-compatible</Badge>}
+                  {p.env[0] && <Badge variant="outline" className="font-mono text-[10px]" dir="ltr">{p.env[0]}</Badge>}
                 </div>
-
-                <div className="flex gap-2">
+                <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
                   <Button
                     size="sm"
                     variant={isInstalled ? 'outline' : 'default'}
                     disabled={isImporting || isInstalled || !canQuickImport}
                     onClick={() => importMutation.mutate(p.id)}
                     className="flex-1"
-                    title={
-                      !canQuickImport
-                        ? 'هذا المزوّد ليس متوافقاً مع OpenAI تلقائياً — أضفه يدوياً'
-                        : isInstalled
-                          ? 'مضاف بالفعل'
-                          : ''
-                    }
+                    title={!canQuickImport ? 'ليس متوافقاً مع OpenAI تلقائياً' : isInstalled ? 'مضاف بالفعل' : ''}
                   >
-                    {isImporting ? (
-                      <>
-                        <Loader2 className="size-3.5 me-1.5 animate-spin" />
-                        جاري…
-                      </>
-                    ) : isInstalled ? (
-                      <>
-                        <Check className="size-3.5 me-1.5" />
-                        مثبّت
-                      </>
-                    ) : (
-                      <>
-                        <Plus className="size-3.5 me-1.5" />
-                        أضِف
-                      </>
-                    )}
+                    {isImporting ? <><Loader2 className="size-3.5 me-1.5 animate-spin" />جاري…</>
+                      : isInstalled ? <><Check className="size-3.5 me-1.5" />مثبّت</>
+                      : <><Plus className="size-3.5 me-1.5" />أضِف</>}
                   </Button>
-                  {p.doc && (
-                    <a
-                      href={p.doc}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title="الوثائق"
-                      className="inline-flex items-center justify-center rounded-md h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                    >
-                      <BookOpen className="size-3.5" />
-                    </a>
-                  )}
+                  <Button size="sm" variant="ghost" onClick={() => setOpenId(p.id)} title="التفاصيل">
+                    التفاصيل
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -256,9 +228,7 @@ export default function DiscoverPage() {
       </div>
 
       {!providers.isLoading && list.length === 0 && (
-        <div className="text-center py-12 text-muted-foreground text-sm">
-          لا نتائج لـ «{query}»
-        </div>
+        <div className="text-center py-12 text-muted-foreground text-sm">لا نتائج لـ «{query}»</div>
       )}
 
       <div className="text-xs text-muted-foreground text-center pt-4 border-t">
@@ -266,6 +236,84 @@ export default function DiscoverPage() {
         {' '}— نفس المصدر الذي يستخدمه{' '}
         <a href="https://opencode.ai" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline">opencode</a>
       </div>
+
+      {/* ===== Detail modal ===== */}
+      {openId && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+          onClick={() => setOpenId(null)}
+        >
+          <div
+            className="bg-card border rounded-xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* header */}
+            <div className="flex items-start justify-between gap-3 p-5 border-b">
+              <div className="min-w-0">
+                <div className="text-lg font-bold">{openSummary?.name || openId}</div>
+                <div className="text-xs text-muted-foreground font-mono" dir="ltr">{openId}</div>
+              </div>
+              <button onClick={() => setOpenId(null)} className="text-muted-foreground hover:text-foreground p-1 rounded-md hover:bg-accent transition-colors">
+                <X className="size-5" />
+              </button>
+            </div>
+
+            {/* meta */}
+            <div className="px-5 py-3 border-b flex flex-wrap gap-2 text-[11px] items-center">
+              <Badge variant="outline" className="tabular-nums">{detail.data ? Object.keys(detail.data.models).length : openSummary?.model_count} نموذج</Badge>
+              {openSummary?.is_openai_compat && <Badge variant="outline" className="bg-brand/10 border-brand/30 text-brand">OpenAI-compatible</Badge>}
+              {detail.data?.env?.[0] && <Badge variant="outline" className="font-mono text-[10px]" dir="ltr">{detail.data.env[0]}</Badge>}
+              {detail.data?.doc && (
+                <a href={detail.data.doc} target="_blank" rel="noopener noreferrer" className="text-brand hover:underline inline-flex items-center gap-1">
+                  <BookOpen className="size-3" />الوثائق<ExternalLink className="size-2.5" />
+                </a>
+              )}
+            </div>
+
+            {/* models list */}
+            <div className="flex-1 overflow-y-auto p-3">
+              {detail.isLoading && <div className="text-center py-8 text-muted-foreground text-sm">جاري التحميل…</div>}
+              {detail.data && (
+                <div className="space-y-1.5">
+                  {Object.values(detail.data.models).map((m) => (
+                    <div key={m.id} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-accent/50 transition-colors">
+                      <div className="min-w-0 flex-1">
+                        <div className="text-sm font-medium truncate">{m.name || m.id}</div>
+                        <div className="text-[11px] text-muted-foreground font-mono truncate" dir="ltr">{m.id}</div>
+                      </div>
+                      <div className="flex items-center gap-1.5 flex-none">
+                        {m.reasoning && <span title="reasoning" className="text-info"><Brain className="size-3.5" /></span>}
+                        {m.tool_call && <span title="tool-calling" className="text-warn"><Wrench className="size-3.5" /></span>}
+                        {m.attachment && <span title="vision" className="text-success"><ImageIcon className="size-3.5" /></span>}
+                        {m.open_weights && <span title="open weights" className="text-muted-foreground"><Zap className="size-3.5" /></span>}
+                      </div>
+                      <div className="text-[11px] text-muted-foreground tabular-nums flex-none w-12 text-end" dir="ltr">{ctxLabel(m.limit?.context)}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* footer / action */}
+            <div className="p-4 border-t flex items-center justify-between gap-3">
+              <div className="text-[11px] text-muted-foreground flex items-center gap-3">
+                <span className="inline-flex items-center gap-1"><Brain className="size-3 text-info" />تفكير</span>
+                <span className="inline-flex items-center gap-1"><Wrench className="size-3 text-warn" />أدوات</span>
+                <span className="inline-flex items-center gap-1"><ImageIcon className="size-3 text-success" />رؤية</span>
+              </div>
+              {installedSet.has(openId) ? (
+                <Button variant="outline" disabled><Check className="size-4 me-1.5" />مثبّت بالفعل</Button>
+              ) : openSummary?.is_openai_compat ? (
+                <Button onClick={() => importMutation.mutate(openId)} disabled={importingId === openId}>
+                  {importingId === openId ? <><Loader2 className="size-4 me-1.5 animate-spin" />جاري الإضافة…</> : <><Plus className="size-4 me-1.5" />أضِف كل النماذج</>}
+                </Button>
+              ) : (
+                <span className="text-xs text-muted-foreground">ليس متوافقاً مع OpenAI — أضفه يدوياً من «المفاتيح»</span>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

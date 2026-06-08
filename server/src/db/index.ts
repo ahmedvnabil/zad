@@ -4,6 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { initEncryptionKey } from '../lib/crypto.js';
+import { seedDemoKeys } from '../lib/demo-seed.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DB_PATH = path.resolve(__dirname, '../../data/freeapi.db');
@@ -51,6 +52,7 @@ export function initDb(dbPath?: string): Database.Database {
   migrateRequestsV1(db);
   migrateRequestsV2(db);
   ensureUnifiedKey(db);
+  seedDemoKeys(db);
 
   console.log(`Database initialized at ${resolvedPath}`);
   return db;
