@@ -37,8 +37,8 @@
   "shot": { "alt": "Zad dashboard" },
 
   "see": {
-    "title": "See it in action",
-    "sub": "Live capture from the dashboard — automatic fallback and analytics at work.",
+    "title": "The full dashboard, at a glance",
+    "sub": "Everything in one page — providers, pricing, savings, and the request log.",
     "alt": "Animated Zad demo — fallback and analytics"
   },
 

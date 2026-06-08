@@ -12,13 +12,15 @@
   const KEY = 'zad_lang';
 
   function detect() {
+    // priority: URL hash > stored preference > Arabic default
+    // (we deliberately ignore navigator.language — Arabic is the brand default,
+    //  English visitors can flip via the language switcher)
     const u = new URL(location.href);
     const fromHash = u.hash.match(/^#(ar|en)$/)?.[1];
     if (fromHash) return fromHash;
     const stored = localStorage.getItem(KEY);
     if (stored && SUPPORTED.includes(stored)) return stored;
-    const nav = (navigator.language || 'ar').slice(0, 2).toLowerCase();
-    return SUPPORTED.includes(nav) ? nav : DEFAULT;
+    return DEFAULT;
   }
 
   function get(obj, path) {
