@@ -13,6 +13,7 @@ import { settingsRouter } from './routes/settings.js';
 import { eventsRouter } from './routes/events.js';
 import { integrationsRouter } from './routes/integrations.js';
 import { providersRouter } from './routes/providers.js';
+import { registryRouter } from './routes/registry.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -60,6 +61,7 @@ export function createApp() {
   app.use('/api/events', eventsRouter);
   app.use('/api/integrations', integrationsRouter);
   app.use('/api/providers', providersRouter);
+  app.use('/api/registry', registryRouter);
 
   // OpenAI-compatible proxy
   app.use('/v1', proxyRouter);
