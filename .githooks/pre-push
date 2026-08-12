@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+#
+# Refuse to push a tree that has reopened the control plane.
+#
+# /api was once entirely unauthenticated. This runs the same two gates CI does,
+# before the push leaves your machine:
+#
+#   1. scripts/check-auth-coverage.sh — every /api route is guarded or listed
+#      as public, and every guarded route is covered by auth.test.ts
+#   2. the server test suite
+#
+# Install:  bash scripts/install-hooks.sh
+# Bypass:   git push --no-verify
+
+set -uo pipefail
+cd "$(git rev-parse --show-toplevel)"
+
+echo "pre-push: checking /api auth coverage…"
+if ! bash scripts/check-auth-coverage.sh; then
+  cat <<'MSG'
+
+pre-push: BLOCKED — an /api route is unguarded or untested.
+
+Fix it, or bypass deliberately with:
+  git push --no-verify
+MSG
+  exit 1
+fi
+
+echo "pre-push: running the server test suite…"
+if ! npm test -w server --silent >/tmp/zad-prepush.log 2>&1; then
+  echo
+  echo "pre-push: BLOCKED — tests failed:"
+  grep -E "×|AssertionError|expected|Tests " /tmp/zad-prepush.log | head -10
+  echo
+  echo "Full output: /tmp/zad-prepush.log"
+  echo "Bypass with: git push --no-verify"
+  exit 1
+fi
+
+echo "pre-push: auth coverage intact and tests pass."
+exit 0

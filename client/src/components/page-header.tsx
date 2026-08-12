@@ -4,10 +4,10 @@ export type Accent = 'brand' | 'success' | 'info' | 'warn'
 
 // Literal class strings so Tailwind keeps them in the build.
 const ACCENT: Record<Accent, { chip: string; bar: string }> = {
-  brand: { chip: 'bg-brand/10 text-brand ring-brand/25', bar: 'bg-brand' },
-  success: { chip: 'bg-success/10 text-success ring-success/25', bar: 'bg-success' },
-  info: { chip: 'bg-info/10 text-info ring-info/25', bar: 'bg-info' },
-  warn: { chip: 'bg-warn/10 text-warn ring-warn/25', bar: 'bg-warn' },
+  brand: { chip: 'bg-brand-subtle text-brand-subtle-foreground ring-brand-border', bar: 'bg-brand' },
+  success: { chip: 'bg-success-subtle text-success-subtle-foreground ring-success-border', bar: 'bg-success' },
+  info: { chip: 'bg-info-subtle text-info-subtle-foreground ring-info-border', bar: 'bg-info' },
+  warn: { chip: 'bg-warn-subtle text-warn-subtle-foreground ring-warn-border', bar: 'bg-warn' },
 }
 
 export function PageHeader({
@@ -35,7 +35,7 @@ export function PageHeader({
           <span className={`mt-1 inline-block h-6 w-1 shrink-0 rounded-full ${a.bar}`} aria-hidden="true" />
         )}
         <div className="min-w-0">
-          <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
+          <h1 className="text-2xl font-bold">{title}</h1>
           {description && (
             <p className="text-sm text-muted-foreground mt-1.5">{description}</p>
           )}

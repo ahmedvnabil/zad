@@ -52,6 +52,7 @@
 - 🔔 **إشعارات تليجرام** — مفتاح جديد/غير صالح · مزوّد وقع/رجع · ملخص يومي · طفرة أخطاء (تُضبط من الواجهة).
 - ➕ **مزوّدون مخصّصون من الواجهة** — أضف أي خدمة متوافقة مع OpenAI وعدّل رابطها live (Ollama محلي · vLLM · LM Studio…).
 - 🔐 **مفاتيح مشفّرة at-rest** + فحص صحة دوري + تعطيل تلقائي للمفاتيح الفاشلة.
+- 🔑 **لوحة تحكم و`/api` محميّان بمفتاح** — شاشة دخول، ومافيش أي شيء مكشوف غير فحص الحياة.
 - 🟢 **واجهة عربية كاملة RTL** بهوية حديثة، فاتح/داكن، بدون build step معقّد.
 
 ### 🚀 التشغيل السريع (Self-host)
@@ -80,7 +81,33 @@ npm run build
 node server/dist/index.js
 ```
 
-افتح `http://localhost:3001`، روح صفحة **المفاتيح**، الصق مفتاح أي مزوّد مجاني (تسجيل مجاني بدون بطاقة) — وابدأ.
+افتح `http://localhost:3001`. أول مرة هيطلب منك **المفتاح الموحّد** — الخادم بيطبعه في اللوج عند أول تشغيل. بعد الدخول، روح صفحة **المفاتيح**، الصق مفتاح أي مزوّد مجاني (تسجيل مجاني بدون بطاقة) — وابدأ.
+
+### 🔐 نموذج الأمان
+
+مفتاح واحد يحمي كل شيء — نفس المفتاح الموحّد اللي بتبعته لـ `/v1`.
+
+| المسار | الحماية |
+|---|---|
+| `/api/*` | **يتطلب المفتاح** — المفاتيح، الإعدادات، التحليلات، الطلبات، السجل، التحديثات الحيّة |
+| `/v1/*` | **يتطلب المفتاح** |
+| `/api/ping` | عام — فحص حياة فقط (الحالة + علم الديمو). لا يكشف أي شيء آخر |
+
+- المفتاح **يُولَّد عند أول تشغيل** ويُطبع في اللوج مرة واحدة. بعدها تقراه من صفحة **المفاتيح** أو تولّد غيره منها.
+- مفاتيح المزوّدين **مشفّرة at-rest** بـ `ENCRYPTION_KEY`. لا تُعاد أبداً كنص صريح — الواجهة تعرض قناعاً فقط.
+- المقارنة بالمفتاح **ثابتة الزمن**، والمفتاح لا يُوضع في أي رابط (localStorage في المتصفح، وهيدر `Authorization` على السلك).
+- **CSP مفعّلة**: `default-src 'self'` — لا سكربتات inline ولا `eval`. المسموح من الخارج ثلاثة فقط: ستايل خطوط Google، وملفات الخطوط، وسكربت Umami — وهي بالضبط ما يحمّله `index.html`.
+- **HSTS يُرسَل فقط إذا وصل الطلب فعلاً عبر TLS** (`req.secure` أو `X-Forwarded-Proto: https`). على `http://localhost` لا يُرسَل — لأن إرساله هناك يثبّت المتصفح على `https://localhost` ويكسر كل خوادم التطوير المحلية عندك، لا هذا فقط.
+
+لو ضاع منك المفتاح:
+
+```bash
+sqlite3 server/data/freeapi.db "select value from settings where key='unified_api_key'"
+```
+
+> ⚠️ **زاد مصمَّم لمشغّل واحد.** مفتاح واحد، ومجموعة واحدة من مفاتيح المزوّدين يتشاركها كل من يملك المفتاح.
+> مافيش حسابات ولا أدوار ولا عزل بين مستخدمين. تمام تماماً على شبكتك أو سيرفرك الخاص —
+> بس **ما تعرضهوش على الإنترنت وتوزّع المفتاح على ناس** وأنت متوقّع إن كل واحد يستهلك حصّته لوحده؛ مش ده الغرض.
 
 **وضع التطوير:** `npm run dev` (يشغّل الخادم + Vite معاً).
 
@@ -92,6 +119,7 @@ node server/dist/index.js
 |---|---|
 | `ENCRYPTION_KEY` | **مطلوب** — مفتاح 64-hex لتشفير المفاتيح المخزّنة. |
 | `PORT` | منفذ الخادم (افتراضي 3001). |
+| `DASHBOARD_ORIGINS` | أصول إضافية مسموح لها بنداء الـAPI من المتصفح (لو الواجهة على مضيف مختلف). |
 | `DEMO_MODE` | `true` يفعّل حماية الديمو العام (حارس SSRF على روابط المزوّدين، يقفل إعدادات تليجرام). مُستخدم على `demo.zad.tools`. |
 | `INGEST_TOKEN` | يحمي endpoints الإضافة السريعة وإدارة المزوّدين (اختياري على شبكة موثوقة). |
 | `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` | إشعارات تليجرام (أو اضبطها من صفحة التنبيهات). |
@@ -186,6 +214,7 @@ Same models. Same quality. Different plumbing. The free tiers carrying that $0 a
 - 🔔 **Telegram alerts** — new/invalid key · provider down/recovered · daily digest · error spikes (configured from the UI).
 - ➕ **Custom providers from the UI** — add any OpenAI-compatible endpoint and edit its URL live (local Ollama · vLLM · LM Studio…).
 - 🔐 **Encrypted keys at rest** + periodic health checks + automatic disable of failing keys.
+- 🔑 **Key-gated dashboard and `/api`** — sign-in screen, and nothing exposed but a liveness probe.
 - 🟢 **Full Arabic RTL UI** with a modern identity, light/dark, no complex build step.
 
 ### 🚀 Quick start (self-host)
@@ -212,7 +241,33 @@ npm run build
 node server/dist/index.js
 ```
 
-Open `http://localhost:3001`, go to the **Keys** page, paste any free-provider key (free signup, no credit card) — and you're live.
+Open `http://localhost:3001`. On first visit it asks for the **unified API key** — the server prints it to the log on first boot. Once you're in, go to the **Keys** page, paste any free-provider key (free sign-up, no card) — and you're running.
+
+### 🔐 Security model
+
+One key protects everything — the same unified key you send to `/v1`.
+
+| Path | Protection |
+|---|---|
+| `/api/*` | **Key required** — keys, settings, analytics, requests, registry, live updates |
+| `/v1/*` | **Key required** |
+| `/api/ping` | Public — liveness only (status + demo flag). Exposes nothing else |
+
+- The key is **generated on first boot** and printed to the log once. After that, read or regenerate it from the **Keys** page.
+- Provider keys are **encrypted at rest** with `ENCRYPTION_KEY` and are never returned in plaintext — the UI only ever shows a mask.
+- Key comparison is **constant-time**, and the key never goes in a URL (localStorage in the browser, `Authorization` header on the wire).
+- **CSP is on**: `default-src 'self'` — no inline scripts, no `eval`. Exactly three third parties are allowed: the Google Fonts stylesheet, the font files, and the Umami script — precisely what `index.html` loads.
+- **HSTS is sent only when the request actually arrived over TLS** (`req.secure` or `X-Forwarded-Proto: https`). Never on `http://localhost`, where it would pin the browser to `https://localhost` and break every local dev server on the machine, not just this one.
+
+Lost the key?
+
+```bash
+sqlite3 server/data/freeapi.db "select value from settings where key='unified_api_key'"
+```
+
+> ⚠️ **Zad is built for a single operator.** One key, and one pool of provider keys shared by everyone who holds it.
+> There are no accounts, no roles, and no per-user isolation. That's fine on your own network or server —
+> but **don't expose it to the internet and hand the key to several people** expecting each to draw on their own quota. That isn't what it does.
 
 **Dev mode:** `npm run dev` (runs server + Vite together).
 
@@ -224,6 +279,7 @@ Open `http://localhost:3001`, go to the **Keys** page, paste any free-provider k
 |---|---|
 | `ENCRYPTION_KEY` | **Required** — 64-hex key for at-rest encryption of stored API keys. |
 | `PORT` | Server port (default 3001). |
+| `DASHBOARD_ORIGINS` | Extra browser origins allowed to call the API (if you serve the dashboard from a different host). |
 | `DEMO_MODE` | `true` enables public-demo guards (SSRF protection on custom-provider URLs, blocks Telegram config). Used for `demo.zad.tools`. |
 | `INGEST_TOKEN` | Protects quick-ingest + provider management endpoints (optional on trusted networks). |
 | `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` | Telegram alerts (or set them from the Notifications page). |

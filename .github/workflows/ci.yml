@@ -18,6 +18,11 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
+      # Structural gate: catches an /api route mounted without requireOwner.
+      # auth.test.ts iterates a fixed list, so it cannot see a brand-new route.
+      - name: Auth coverage
+        run: bash scripts/check-auth-coverage.sh
+
       - name: Install dependencies
         run: npm install
 

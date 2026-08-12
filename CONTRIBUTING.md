@@ -23,6 +23,7 @@ npm run dev        # الخادم + Vite معاً
 
 ```bash
 npm test -w server     # vitest · قاعدة بيانات :memory:
+npm run check:auth     # كل /api محروس أو معلن عام صراحةً
 ```
 
 أي تغيير على المنطق لازم تضيف/تحدّث اختبار. كل الاختبارات لازم تعدّي قبل الـ PR.
@@ -39,6 +40,10 @@ npm test -w server     # vitest · قاعدة بيانات :memory:
 1. افتح issue للنقاش قبل التغييرات الكبيرة.
 2. فرع وصفي + رسائل commit واضحة.
 3. تأكّد إن `npm run build` و`npm test -w server` بيعدّوا.
+
+> `npm install` بيثبّت hook اسمه `pre-push` تلقائيًا (عبر `postinstall`)، بيشغّل
+> `check:auth` والاختبارات قبل أي دفع. لو ضفت راوت `/api` جديد من غير `requireOwner`
+> الهوك هيقفل الدفع ويقولك تعمل إيه. للتعطيل: `git config --unset core.hooksPath`.
 4. صف التغيير و«ليه» في الـ PR.
 
 ## الأمان

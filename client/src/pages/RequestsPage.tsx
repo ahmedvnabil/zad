@@ -64,7 +64,7 @@ function fmtCost(usd: number): string {
 function Detail({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-0.5">
-      <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</span>
+      <span className="text-xs text-muted-foreground">{label}</span>
       <span className="text-xs font-mono break-all">{value}</span>
     </div>
   )
@@ -74,8 +74,8 @@ function RequestDetail({ r, onReplay }: { r: RequestRow; onReplay: (r: RequestRo
   const yn = (v: boolean | null) => (v === null ? '—' : v ? 'نعم' : 'لا')
   const canReplay = !!r.requestMessages?.some(m => m.role === 'user' && typeof m.content === 'string')
   return (
-    <div className="bg-muted/30 px-4 py-4 border-t space-y-4">
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-4 rounded-lg border bg-card/50 p-4">
+    <div className="bg-muted px-4 py-4 border-t space-y-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-4 rounded-lg border bg-card p-4">
         <Detail label="معرّف الطلب" value={`#${r.id}`} />
         <Detail label="المطلوب" value={r.requestedModel ?? '—'} />
         <Detail label="النموذج المُستخدَم" value={r.modelId} />
@@ -85,12 +85,12 @@ function RequestDetail({ r, onReplay }: { r: RequestRow; onReplay: (r: RequestRo
         <Detail label="الأدوات" value={yn(r.hadTools)} />
         <Detail label="بثّ متدفّق" value={yn(r.streamed)} />
         <Detail label="سبب الإنهاء" value={r.finishReason ?? '—'} />
-        <Detail label="توكنز الدخل" value={r.inputTokens.toLocaleString()} />
-        <Detail label="توكنز الخرج" value={r.outputTokens.toLocaleString()} />
-        <Detail label="إجمالي التوكنز" value={r.totalTokens.toLocaleString()} />
+        <Detail label="توكنز الدخل" value={r.inputTokens.toLocaleString('ar-EG-u-nu-latn')} />
+        <Detail label="توكنز الخرج" value={r.outputTokens.toLocaleString('ar-EG-u-nu-latn')} />
+        <Detail label="إجمالي التوكنز" value={r.totalTokens.toLocaleString('ar-EG-u-nu-latn')} />
         <Detail label="زمن الاستجابة" value={`${r.latencyMs} ms`} />
         <Detail label="التكلفة المقدّرة" value={fmtCost(r.estimatedCostUsd)} />
-        <Detail label="الوقت والتاريخ" value={new Date(r.createdAt).toLocaleString()} />
+        <Detail label="الوقت والتاريخ" value={new Date(r.createdAt).toLocaleString('ar-EG-u-nu-latn')} />
         <Detail label="الحالة" value={<span className={statusClass(r.status)}>{r.status}</span>} />
       </div>
 
@@ -98,25 +98,25 @@ function RequestDetail({ r, onReplay }: { r: RequestRow; onReplay: (r: RequestRo
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
           {r.promptPreview && (
             <div className="flex flex-col gap-1">
-              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">الموجّه (معاينة)</span>
-              <pre className="text-xs whitespace-pre-wrap break-all bg-background border rounded-lg p-3 max-h-40 overflow-auto">{r.promptPreview}</pre>
+              <span className="text-xs text-muted-foreground">الموجّه (معاينة)</span>
+              <pre dir="auto" className="text-xs whitespace-pre-wrap break-all bg-background border rounded-lg p-3 max-h-40 overflow-auto">{r.promptPreview}</pre>
             </div>
           )}
           {r.responsePreview && (
             <div className="flex flex-col gap-1">
-              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">الاستجابة (معاينة)</span>
-              <pre className="text-xs whitespace-pre-wrap break-all bg-background border rounded-lg p-3 max-h-40 overflow-auto">{r.responsePreview}</pre>
+              <span className="text-xs text-muted-foreground">الاستجابة (معاينة)</span>
+              <pre dir="auto" className="text-xs whitespace-pre-wrap break-all bg-background border rounded-lg p-3 max-h-40 overflow-auto">{r.responsePreview}</pre>
             </div>
           )}
         </div>
       ) : (
-        <p className="text-[11px] text-muted-foreground">لم يُسجَّل المحتوى — فعّل «التقاط المحتوى» لتسجيل الموجّهات والاستجابات.</p>
+        <p className="text-xs text-muted-foreground">لم يُسجَّل المحتوى — فعّل «التقاط المحتوى» لتسجيل الموجّهات والاستجابات.</p>
       )}
 
       {r.error && (
         <div className="flex flex-col gap-1">
-          <span className="text-[10px] uppercase tracking-wider text-destructive">خطأ</span>
-          <pre className="text-xs text-destructive whitespace-pre-wrap break-all bg-destructive/10 border border-destructive/30 rounded-lg p-3 max-h-40 overflow-auto">{r.error}</pre>
+          <span className="text-xs text-destructive">خطأ</span>
+          <pre className="text-xs text-destructive-subtle-foreground whitespace-pre-wrap break-all bg-destructive-subtle border border-destructive-border rounded-lg p-3 max-h-40 overflow-auto">{r.error}</pre>
         </div>
       )}
 
@@ -190,7 +190,7 @@ export default function RequestsPage() {
         actions={
           <div className="flex items-center gap-3">
             <label className="flex items-center gap-2 text-xs text-muted-foreground select-none" title="تخزين موجّه كل طلب مع معاينة للاستجابة (متوقّف افتراضيًا)">
-              <Switch checked={capture?.enabled ?? false} onCheckedChange={(c) => captureMutation.mutate(c)} />
+              <Switch aria-label="حفظ محتوى الطلبات" checked={capture?.enabled ?? false} onCheckedChange={(c) => captureMutation.mutate(c)} />
               التقاط المحتوى
             </label>
             <Button
@@ -204,12 +204,12 @@ export default function RequestsPage() {
       />
 
       <div className="flex flex-wrap items-center gap-2">
-        <div className="inline-flex h-8 items-center rounded-lg border bg-muted/40 p-0.5">
+        <div className="inline-flex h-8 items-center rounded-lg border bg-muted p-0.5">
           {(['all', 'success', 'error'] as const).map(s => (
             <button
               key={s}
               onClick={() => { setStatus(s); setOffset(0) }}
-              className={`h-7 rounded-md px-3 text-xs font-medium transition-colors ${status === s ? 'bg-brand/10 text-brand' : 'text-muted-foreground hover:text-foreground'}`}
+              className={`h-7 rounded-md px-3 text-xs font-medium transition-colors ${status === s ? 'bg-brand-subtle text-brand' : 'text-muted-foreground hover:text-foreground'}`}
             >
               {s === 'all' ? 'كل الحالات' : s === 'success' ? 'ناجح' : 'خطأ'}
             </button>
@@ -219,12 +219,12 @@ export default function RequestsPage() {
           value={searchInput}
           onChange={e => setSearchInput(e.target.value)}
           placeholder="ابحث في النموذج / المزوّد / الخطأ…"
-          className="h-8 flex-1 min-w-[200px] rounded-lg border bg-background px-3 text-xs focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand/40"
+          className="h-8 flex-1 min-w-[200px] rounded-lg border bg-background px-3 text-xs focus:outline-none focus:ring-2 focus:ring-brand-border focus:border-brand-border"
         />
-        <a href={`${BASE}/api/analytics/requests/export?format=csv&${filterQs}`} className="inline-flex h-8 items-center rounded-lg border px-3 text-xs transition-colors hover:bg-accent/40">تصدير CSV</a>
-        <a href={`${BASE}/api/analytics/requests/export?format=json&${filterQs}`} className="inline-flex h-8 items-center rounded-lg border px-3 text-xs transition-colors hover:bg-accent/40">JSON</a>
+        <a href={`${BASE}/api/analytics/requests/export?format=csv&${filterQs}`} className="inline-flex h-8 items-center rounded-lg border px-3 text-xs transition-colors hover:bg-accent">تصدير CSV</a>
+        <a href={`${BASE}/api/analytics/requests/export?format=json&${filterQs}`} className="inline-flex h-8 items-center rounded-lg border px-3 text-xs transition-colors hover:bg-accent">JSON</a>
         <span className="text-xs text-muted-foreground tabular-nums ms-auto">
-          {total > 0 ? `${(offset + 1).toLocaleString()}–${showingTo.toLocaleString()} من ${total.toLocaleString()}` : `${total} الإجمالي`}
+          {total > 0 ? `${(offset + 1).toLocaleString('ar-EG-u-nu-latn')}–${showingTo.toLocaleString('ar-EG-u-nu-latn')} من ${total.toLocaleString('ar-EG-u-nu-latn')}` : `${total} الإجمالي`}
         </span>
       </div>
 
@@ -254,28 +254,48 @@ export default function RequestsPage() {
                   {rows.map(r => {
                     const isOpen = expanded === r.id
                     return (
-                      <TableRow key={r.id} className={`cursor-pointer transition-colors hover:bg-accent/40 ${isOpen ? 'bg-accent/40' : ''}`} onClick={() => setExpanded(isOpen ? null : r.id)}>
+                      <TableRow key={r.id} className={`cursor-pointer transition-colors hover:bg-accent ${isOpen ? 'bg-accent' : ''}`} onClick={() => setExpanded(isOpen ? null : r.id)}>
                         <TableCell className="ps-4 text-sm font-medium max-w-[240px] truncate">
-                          <span className="inline-flex items-center gap-2">
-                            <span className={`inline-block size-1.5 rounded-full ${statusDotClass(r.status)}`} />
-                            <span className="inline-block w-3 text-muted-foreground">{isOpen ? '▾' : '▸'}</span>
+                          {/* The row's onClick is a mouse convenience; a <tr> is
+                              not focusable and takes no key events, so this
+                              button is the only way in from the keyboard. */}
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); setExpanded(isOpen ? null : r.id) }}
+                            aria-expanded={isOpen}
+                            aria-controls={`req-detail-${r.id}`}
+                            className="inline-flex max-w-full items-center gap-2 rounded-sm text-start focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/70"
+                          >
+                            <span aria-hidden="true" className={`inline-block size-1.5 rounded-full ${statusDotClass(r.status)}`} />
+                            <span aria-hidden="true" className="inline-block w-3 text-muted-foreground">{isOpen ? '▾' : '▸'}</span>
                             <span className="truncate">{r.displayName}</span>
-                          </span>
+                            <span className="sr-only">— {r.status}{isOpen ? '، التفاصيل مفتوحة' : ''}</span>
+                          </button>
                           {r.attempts && r.attempts > 1 && (
-                            <span className="ms-2 text-[10px] text-warn tabular-nums">↻{r.attempts}</span>
+                            <span className="ms-2 text-xs text-warn-subtle-foreground tabular-nums">↻{r.attempts}</span>
                           )}
                         </TableCell>
                         <TableCell className="text-xs text-muted-foreground font-mono">{r.platform}</TableCell>
                         <TableCell className={`text-xs font-medium ${statusClass(r.status)}`}>{r.status}</TableCell>
-                        <TableCell className="text-end tabular-nums text-xs">{r.totalTokens.toLocaleString()}</TableCell>
+                        <TableCell className="text-end tabular-nums text-xs">{r.totalTokens.toLocaleString('ar-EG-u-nu-latn')}</TableCell>
                         <TableCell className="text-end tabular-nums text-xs">{fmtCost(r.estimatedCostUsd)}</TableCell>
                         <TableCell className="text-end tabular-nums text-xs">{r.latencyMs} ms</TableCell>
                         <TableCell className="pe-4 text-xs text-muted-foreground tabular-nums">
-                          {new Date(r.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                          {new Date(r.createdAt).toLocaleTimeString('ar-EG-u-nu-latn', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                         </TableCell>
                       </TableRow>
                     )
                   })}
+                  {/* Inline detail for the widths where the aside is hidden.
+                      RequestDetail is already styled for exactly this — it has
+                      its own border-t and padding. */}
+                  {selectedRow && (
+                    <TableRow className="lg:hidden">
+                      <TableCell colSpan={7} className="p-0">
+                        <RequestDetail r={selectedRow} onReplay={handleReplay} />
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </div>
@@ -286,7 +306,11 @@ export default function RequestsPage() {
             </div>
           </div>
 
-          <aside className="rounded-xl border bg-card card-sheen lg:sticky lg:top-20 self-start max-h-[calc(100vh-7rem)] overflow-y-auto">
+          <aside
+            id={selectedRow ? `req-detail-${selectedRow.id}` : undefined}
+            tabIndex={0}
+            aria-label="تفاصيل الطلب"
+            className="hidden lg:block rounded-xl border bg-card card-sheen lg:sticky lg:top-20 self-start max-h-[calc(100vh-7rem)] overflow-y-auto focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/70">
             {selectedRow ? (
               <RequestDetail r={selectedRow} onReplay={handleReplay} />
             ) : (

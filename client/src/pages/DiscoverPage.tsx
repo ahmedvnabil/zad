@@ -1,10 +1,11 @@
-import { useState, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { PageHeader } from '@/components/page-header'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { apiFetch } from '@/lib/api'
 import {
   Compass, Plus, Search, BookOpen, Check, Loader2, AlertCircle,
   X, Brain, Wrench, Image as ImageIcon, Zap, ExternalLink,
@@ -66,28 +67,65 @@ function ctxLabel(n?: number) {
   return `${n}`
 }
 
+// Everything a hand-rolled overlay has to do to be a dialog: hold focus,
+// close on Escape, stop the page behind it scrolling, and put focus back
+// where it came from. Missing all four is why this was a keyboard trap.
+function useDialog(open: boolean, onClose: () => void) {
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!open) return
+    const restoreTo = document.activeElement as HTMLElement | null
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    ref.current?.focus()
+
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') { onClose(); return }
+      if (e.key !== 'Tab' || !ref.current) return
+      const focusable = ref.current.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      )
+      if (!focusable.length) return
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus() }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus() }
+    }
+
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('keydown', onKeyDown)
+      document.body.style.overflow = prevOverflow
+      restoreTo?.focus()
+    }
+  }, [open, onClose])
+  return ref
+}
+
 export default function DiscoverPage() {
   const [query, setQuery] = useState('')
   const [openId, setOpenId] = useState<string | null>(null)
+  const closeModal = useCallback(() => setOpenId(null), [])
+  const dialogRef = useDialog(!!openId, closeModal)
   const qc = useQueryClient()
   const [toast, setToast] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null)
   const [importingId, setImportingId] = useState<string | null>(null)
 
   const stats = useQuery<RegistryStats>({
     queryKey: ['registry-stats'],
-    queryFn: () => fetch('/api/registry/stats').then((r) => r.json()),
+    queryFn: () => apiFetch<RegistryStats>('/api/registry/stats'),
     refetchInterval: 60_000,
   })
 
   const providers = useQuery<ProviderSummary[]>({
     queryKey: ['registry-providers'],
-    queryFn: () => fetch('/api/registry/providers').then((r) => r.json()),
+    queryFn: () => apiFetch<ProviderSummary[]>('/api/registry/providers'),
     staleTime: 5 * 60_000,
   })
 
   const installed = useQuery<{ platform: string }[]>({
     queryKey: ['providers'],
-    queryFn: () => fetch('/api/providers').then((r) => r.json()),
+    queryFn: () => apiFetch<{ platform: string }[]>('/api/providers'),
   })
   const installedSet = useMemo(
     () => new Set((installed.data || []).map((p) => p.platform)),
@@ -97,21 +135,17 @@ export default function DiscoverPage() {
   // detail for the open modal
   const detail = useQuery<ProviderDetail>({
     queryKey: ['registry-provider', openId],
-    queryFn: () => fetch(`/api/registry/providers/${openId}`).then((r) => r.json()),
+    queryFn: () => apiFetch<ProviderDetail>(`/api/registry/providers/${openId}`),
     enabled: !!openId,
   })
 
   const importMutation = useMutation({
     mutationFn: async (id: string) => {
       setImportingId(id)
-      const res = await fetch(`/api/registry/import/${id}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
-      })
-      const body = await res.json()
-      if (!res.ok) throw new Error(body?.error?.message || 'فشل الاستيراد')
-      return body as { platform: string; modelCount: number; name: string }
+      return await apiFetch<{ platform: string; modelCount: number; name: string }>(
+        `/api/registry/import/${id}`,
+        { method: 'POST', body: JSON.stringify({}) },
+      )
     },
     onSuccess: (d) => {
       setToast({ kind: 'ok', text: `تم: ${d.name} (${d.modelCount} نموذج)` })
@@ -169,13 +203,14 @@ export default function DiscoverPage() {
       </div>
 
       {toast && (
-        <div className={`text-sm rounded-md border px-3 py-2 ${toast.kind === 'ok' ? 'bg-success/10 border-success/30 text-success' : 'bg-destructive/10 border-destructive/30 text-destructive'}`}>
+        <div role="status" aria-live="polite" dir="auto"
+            className={`text-sm rounded-md border px-3 py-2 ${toast.kind === 'ok' ? 'bg-success-subtle border-success-border text-success' : 'bg-destructive-subtle border-destructive-border text-destructive'}`}>
           {toast.text}
         </div>
       )}
 
       {providers.isLoading && <div className="text-center py-12 text-muted-foreground text-sm">جاري تحميل الفهرس…</div>}
-      {providers.isError && <div className="text-center py-12 text-destructive text-sm"><AlertCircle className="inline size-4 me-2" />تعذّر تحميل الفهرس</div>}
+      {providers.isError && <div className="text-center py-12 text-destructive-subtle-foreground text-sm"><AlertCircle className="inline size-4 me-2" />تعذّر تحميل الفهرس</div>}
 
       {/* Providers grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -186,7 +221,7 @@ export default function DiscoverPage() {
           return (
             <Card
               key={p.id}
-              className="overflow-hidden cursor-pointer hover:border-brand/40 transition-colors"
+              className="overflow-hidden cursor-pointer hover:border-brand-border transition-colors"
               onClick={() => setOpenId(p.id)}
             >
               <CardContent className="p-4 space-y-3">
@@ -196,13 +231,13 @@ export default function DiscoverPage() {
                     <div className="text-xs text-muted-foreground font-mono truncate" dir="ltr">{p.id}</div>
                   </div>
                   {isInstalled && (
-                    <Badge variant="outline" className="bg-success/10 border-success/30 text-success text-[10px]"><Check className="size-3 me-1" />مثبّت</Badge>
+                    <Badge variant="outline" className="bg-success-subtle border-success-border text-success-subtle-foreground text-xs"><Check className="size-3 me-1" />مثبّت</Badge>
                   )}
                 </div>
-                <div className="flex flex-wrap gap-1.5 text-[11px]">
+                <div className="flex flex-wrap gap-1.5 text-xs">
                   <Badge variant="outline" className="tabular-nums">{p.model_count} نموذج</Badge>
-                  {p.is_openai_compat && <Badge variant="outline" className="bg-brand/10 border-brand/30 text-brand">OpenAI-compatible</Badge>}
-                  {p.env[0] && <Badge variant="outline" className="font-mono text-[10px]" dir="ltr">{p.env[0]}</Badge>}
+                  {p.is_openai_compat && <Badge variant="outline" className="bg-brand-subtle border-brand-border text-brand">OpenAI-compatible</Badge>}
+                  {p.env[0] && <Badge variant="outline" className="font-mono text-xs" dir="ltr">{p.env[0]}</Badge>}
                 </div>
                 <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
                   <Button
@@ -232,39 +267,44 @@ export default function DiscoverPage() {
       )}
 
       <div className="text-xs text-muted-foreground text-center pt-4 border-t">
-        الفهرس مبني على <a href="https://models.dev" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline">models.dev</a>
+        الفهرس مبني على <a href="https://models.dev" target="_blank" rel="noopener noreferrer" className="text-brand-subtle-foreground hover:underline">models.dev</a>
         {' '}— نفس المصدر الذي يستخدمه{' '}
-        <a href="https://opencode.ai" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline">opencode</a>
+        <a href="https://opencode.ai" target="_blank" rel="noopener noreferrer" className="text-brand-subtle-foreground hover:underline">opencode</a>
       </div>
 
       {/* ===== Detail modal ===== */}
       {openId && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-          onClick={() => setOpenId(null)}
+          onClick={closeModal}
         >
           <div
-            className="bg-card border rounded-xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden"
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="discover-modal-title"
+            tabIndex={-1}
+            className="bg-card border rounded-xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden focus:outline-none"
             onClick={(e) => e.stopPropagation()}
           >
             {/* header */}
             <div className="flex items-start justify-between gap-3 p-5 border-b">
               <div className="min-w-0">
-                <div className="text-lg font-bold">{openSummary?.name || openId}</div>
+                <h2 id="discover-modal-title" className="text-lg font-bold">{openSummary?.name || openId}</h2>
                 <div className="text-xs text-muted-foreground font-mono" dir="ltr">{openId}</div>
               </div>
-              <button onClick={() => setOpenId(null)} className="text-muted-foreground hover:text-foreground p-1 rounded-md hover:bg-accent transition-colors">
-                <X className="size-5" />
+              <button type="button" aria-label="إغلاق" onClick={closeModal} className="text-muted-foreground hover:text-foreground p-1 rounded-md hover:bg-accent transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/70">
+                <X aria-hidden="true" className="size-5" />
               </button>
             </div>
 
             {/* meta */}
-            <div className="px-5 py-3 border-b flex flex-wrap gap-2 text-[11px] items-center">
+            <div className="px-5 py-3 border-b flex flex-wrap gap-2 text-xs items-center">
               <Badge variant="outline" className="tabular-nums">{detail.data ? Object.keys(detail.data.models).length : openSummary?.model_count} نموذج</Badge>
-              {openSummary?.is_openai_compat && <Badge variant="outline" className="bg-brand/10 border-brand/30 text-brand">OpenAI-compatible</Badge>}
-              {detail.data?.env?.[0] && <Badge variant="outline" className="font-mono text-[10px]" dir="ltr">{detail.data.env[0]}</Badge>}
+              {openSummary?.is_openai_compat && <Badge variant="outline" className="bg-brand-subtle border-brand-border text-brand">OpenAI-compatible</Badge>}
+              {detail.data?.env?.[0] && <Badge variant="outline" className="font-mono text-xs" dir="ltr">{detail.data.env[0]}</Badge>}
               {detail.data?.doc && (
-                <a href={detail.data.doc} target="_blank" rel="noopener noreferrer" className="text-brand hover:underline inline-flex items-center gap-1">
+                <a href={detail.data.doc} target="_blank" rel="noopener noreferrer" className="text-brand-subtle-foreground hover:underline inline-flex items-center gap-1">
                   <BookOpen className="size-3" />الوثائق<ExternalLink className="size-2.5" />
                 </a>
               )}
@@ -276,10 +316,10 @@ export default function DiscoverPage() {
               {detail.data && (
                 <div className="space-y-1.5">
                   {Object.values(detail.data.models).map((m) => (
-                    <div key={m.id} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-accent/50 transition-colors">
+                    <div key={m.id} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-accent transition-colors">
                       <div className="min-w-0 flex-1">
                         <div className="text-sm font-medium truncate">{m.name || m.id}</div>
-                        <div className="text-[11px] text-muted-foreground font-mono truncate" dir="ltr">{m.id}</div>
+                        <div className="text-xs text-muted-foreground font-mono truncate" dir="ltr">{m.id}</div>
                       </div>
                       <div className="flex items-center gap-1.5 flex-none">
                         {m.reasoning && <span title="reasoning" className="text-info"><Brain className="size-3.5" /></span>}
@@ -287,7 +327,7 @@ export default function DiscoverPage() {
                         {m.attachment && <span title="vision" className="text-success"><ImageIcon className="size-3.5" /></span>}
                         {m.open_weights && <span title="open weights" className="text-muted-foreground"><Zap className="size-3.5" /></span>}
                       </div>
-                      <div className="text-[11px] text-muted-foreground tabular-nums flex-none w-12 text-end" dir="ltr">{ctxLabel(m.limit?.context)}</div>
+                      <div className="text-xs text-muted-foreground tabular-nums flex-none w-12 text-end" dir="ltr">{ctxLabel(m.limit?.context)}</div>
                     </div>
                   ))}
                 </div>
@@ -296,7 +336,7 @@ export default function DiscoverPage() {
 
             {/* footer / action */}
             <div className="p-4 border-t flex items-center justify-between gap-3">
-              <div className="text-[11px] text-muted-foreground flex items-center gap-3">
+              <div className="text-xs text-muted-foreground flex items-center gap-3">
                 <span className="inline-flex items-center gap-1"><Brain className="size-3 text-info" />تفكير</span>
                 <span className="inline-flex items-center gap-1"><Wrench className="size-3 text-warn" />أدوات</span>
                 <span className="inline-flex items-center gap-1"><ImageIcon className="size-3 text-success" />رؤية</span>

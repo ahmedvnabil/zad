@@ -1,3 +1,4 @@
+import { tokens } from '@/lib/format'
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
@@ -54,12 +55,6 @@ interface FallbackEntry {
   keyCount: number
 }
 
-function formatTokens(n: number): string {
-  if (n >= 1_000_000_000) return `${(n / 1_000_000_000).toFixed(1)}B`
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`
-  return String(n)
-}
 
 function formatContextWindow(n: number | null): string {
   if (!n) return 'ctx ?'
@@ -75,14 +70,16 @@ function capabilityLabel(value: boolean | 'unknown'): string {
 }
 
 function capabilityClass(value: boolean | 'unknown'): string {
-  if (value === true) return 'border-success/30 bg-success/10 text-success'
+  if (value === true) return 'border-success-border bg-success-subtle text-success'
   if (value === false) return 'border-border bg-muted text-muted-foreground'
-  return 'border-warn/30 bg-warn/10 text-warn'
+  return 'border-warn-border bg-warn-subtle text-warn'
 }
 
 // Feature tags already represented by the capability pills (or universal), so
 // they are hidden from the secondary feature chips to avoid redundancy.
 const PILL_FEATURES = new Set(['chat-completions', 'tool-calling', 'vision', 'image-input', 'audio-input'])
+
+const fmtTokens = (n: number | null | undefined) => tokens(n, '—')
 
 function CapabilityPill({
   label,
@@ -92,7 +89,7 @@ function CapabilityPill({
   value: boolean | 'unknown'
 }) {
   return (
-    <span className={`inline-flex h-5 items-center gap-1 rounded-full border px-2 text-[11px] font-medium ${capabilityClass(value)}`}>
+    <span className={`inline-flex h-5 items-center gap-1 rounded-full border px-2 text-xs font-medium ${capabilityClass(value)}`}>
       {label}
       <span className="font-mono">{capabilityLabel(value)}</span>
     </span>
@@ -151,14 +148,14 @@ function TokenUsageBar({ data }: { data: TokenUsageData }) {
     <section className="rounded-xl border bg-gradient-to-br from-brand/5 via-card to-card p-5 shadow-sm">
       <div className="flex items-end justify-between gap-4 mb-4">
         <div className="min-w-0">
-          <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">ميزانية الرموز الشهرية</h2>
+          <h2 className="text-xs font-medium text-muted-foreground">ميزانية الرموز الشهرية</h2>
           <div className="mt-1 flex items-baseline gap-2">
-            <span className="text-3xl font-bold tracking-tight text-foreground tabular-nums">{formatTokens(remaining)}</span>
+            <span className="text-3xl font-bold text-foreground tabular-nums">{fmtTokens(remaining)}</span>
             <span className="text-sm text-muted-foreground">متبقٍّ</span>
           </div>
         </div>
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-brand/10 px-2.5 py-1 text-xs font-medium text-brand tabular-nums">
-          {remainingPct}% من {formatTokens(totalBudget)}
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-subtle px-2.5 py-1 text-xs font-medium text-brand-subtle-foreground tabular-nums">
+          {remainingPct}% من {fmtTokens(totalBudget)}
         </span>
       </div>
 
@@ -166,7 +163,7 @@ function TokenUsageBar({ data }: { data: TokenUsageData }) {
         {modelsWithWidth.map((m, i) => (
           <div
             key={i}
-            title={`${m.displayName} (${m.platform}) — ${formatTokens(m.remainingTokens)} متبقٍّ`}
+            title={`${m.displayName} (${m.platform}) — ${fmtTokens(m.remainingTokens)} متبقٍّ`}
             style={{
               width: `${m.widthPct}%`,
               backgroundColor: platformColors[m.platform] ?? '#94a3b8',
@@ -175,7 +172,7 @@ function TokenUsageBar({ data }: { data: TokenUsageData }) {
         ))}
         {totalUsed > 0 && (
           <div
-            title={`المستهلَك — ${formatTokens(totalUsed)}`}
+            title={`المستهلَك — ${fmtTokens(totalUsed)}`}
             className="bg-muted-foreground/30"
             style={{ width: `${usedPct}%` }}
           />
@@ -191,7 +188,7 @@ function TokenUsageBar({ data }: { data: TokenUsageData }) {
             />
             <span className="truncate">{m.displayName}</span>
             <span className="flex-1" />
-            <span className="font-mono text-muted-foreground">{formatTokens(m.remainingTokens)}</span>
+            <span className="font-mono text-muted-foreground">{fmtTokens(m.remainingTokens)}</span>
           </div>
         ))}
       </div>
@@ -221,7 +218,7 @@ function SortableModelRow({
     <div
       ref={setNodeRef}
       style={style}
-      className={`group flex items-center gap-3 rounded-lg border bg-card px-4 py-3 transition-colors hover:border-brand/40 ${isDragging ? 'opacity-50 border-brand/40 shadow-md' : ''} ${entry.enabled ? '' : 'opacity-50'}`}
+      className={`group flex items-center gap-3 rounded-lg border bg-card px-4 py-3 transition-colors hover:border-brand-border ${isDragging ? 'opacity-50 border-brand-border shadow-md' : ''} ${entry.enabled ? '' : 'opacity-50'}`}
     >
       <button
         {...attributes}
@@ -235,19 +232,19 @@ function SortableModelRow({
           <circle cx="9" cy="18" r="1.5" /><circle cx="15" cy="18" r="1.5" />
         </svg>
       </button>
-      <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-md bg-brand/10 text-xs font-semibold font-mono text-brand tabular-nums">{index + 1}</span>
+      <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-md bg-brand-subtle text-xs font-semibold font-mono text-brand-subtle-foreground tabular-nums">{index + 1}</span>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="font-medium text-sm">{entry.displayName}</span>
           <span className="text-xs text-muted-foreground">{entry.platform}</span>
           <span className="text-xs font-mono text-muted-foreground">{formatContextWindow(entry.contextWindow)}</span>
           {entry.penalty > 0 && (
-            <span className="inline-flex h-5 items-center rounded-full bg-warn/10 px-2 text-[11px] font-medium text-warn tabular-nums">
+            <span className="inline-flex h-5 items-center rounded-full bg-warn-subtle px-2 text-xs font-medium text-warn-subtle-foreground tabular-nums">
               −{entry.penalty} غرامة
             </span>
           )}
           {entry.budgetExhausted && (
-            <span className="inline-flex h-5 items-center rounded-full border border-destructive/30 bg-destructive/10 px-2 text-[11px] font-medium text-destructive" title="استنفد هذا المزوّد ميزانيته الشهرية المجانية المقدّرة">
+            <span className="inline-flex h-5 items-center rounded-full border border-destructive-border bg-destructive-subtle px-2 text-xs font-medium text-destructive" title="استنفد هذا المزوّد ميزانيته الشهرية المجانية المقدّرة">
               تجاوز الميزانية
             </span>
           )}
@@ -272,13 +269,14 @@ function SortableModelRow({
             .filter(f => !PILL_FEATURES.has(f))
             .slice(0, 4)
             .map(feature => (
-              <span key={feature} className="inline-flex h-5 items-center rounded-full bg-muted px-2 text-[11px] text-muted-foreground">
+              <span key={feature} className="inline-flex h-5 items-center rounded-full bg-muted px-2 text-xs text-muted-foreground">
                 {feature}
               </span>
             ))}
         </div>
       </div>
       <Switch
+        aria-label={`تفعيل ${entry.displayName}`}
         checked={entry.enabled}
         onCheckedChange={(checked) => onToggle(entry.modelDbId, checked)}
       />
@@ -420,32 +418,32 @@ export default function FallbackPage() {
               {optimizeMutation.isPending ? 'جارٍ التحسين…' : 'تحسين للرصيد'}
             </Button>
             <label className="flex items-center gap-2 text-xs text-muted-foreground select-none" title="إعادة تطبيق هذا الترتيب الأمثل تلقائيًا كل بضع ساعات">
-              <Switch checked={autoOpt?.enabled ?? false} onCheckedChange={(c) => autoOptMutation.mutate(c)} />
+              <Switch aria-label="إعادة الترتيب التلقائي" checked={autoOpt?.enabled ?? false} onCheckedChange={(c) => autoOptMutation.mutate(c)} />
               تلقائي
             </label>
             <label className="flex items-center gap-2 text-xs text-muted-foreground select-none" title="تعطيل المزوّدين الذين استنفدوا ميزانيتهم الشهرية المجانية تلقائيًا، وإعادة تفعيلهم عند تجدّدها">
-              <Switch checked={budgetGuard?.enabled ?? false} onCheckedChange={(c) => budgetGuardMutation.mutate(c)} />
+              <Switch aria-label="حارس الميزانية" checked={budgetGuard?.enabled ?? false} onCheckedChange={(c) => budgetGuardMutation.mutate(c)} />
               حارس الميزانية
             </label>
             <div className="inline-flex items-center rounded-lg border bg-card p-0.5 text-xs">
               <button
                 onClick={() => sortMutation.mutate('intelligence')}
                 disabled={sortMutation.isPending}
-                className="rounded-md px-2.5 py-1 font-medium text-muted-foreground transition-colors hover:bg-brand/10 hover:text-brand disabled:opacity-50"
+                className="rounded-md px-2.5 py-1 font-medium text-muted-foreground transition-colors hover:bg-brand-subtle hover:text-brand-subtle-foreground disabled:opacity-50"
               >
                 ترتيب حسب الذكاء
               </button>
               <button
                 onClick={() => sortMutation.mutate('speed')}
                 disabled={sortMutation.isPending}
-                className="rounded-md px-2.5 py-1 font-medium text-muted-foreground transition-colors hover:bg-brand/10 hover:text-brand disabled:opacity-50"
+                className="rounded-md px-2.5 py-1 font-medium text-muted-foreground transition-colors hover:bg-brand-subtle hover:text-brand-subtle-foreground disabled:opacity-50"
               >
                 ترتيب حسب السرعة
               </button>
               <button
                 onClick={() => sortMutation.mutate('budget')}
                 disabled={sortMutation.isPending}
-                className="rounded-md px-2.5 py-1 font-medium text-muted-foreground transition-colors hover:bg-brand/10 hover:text-brand disabled:opacity-50"
+                className="rounded-md px-2.5 py-1 font-medium text-muted-foreground transition-colors hover:bg-brand-subtle hover:text-brand-subtle-foreground disabled:opacity-50"
               >
                 ترتيب حسب الميزانية
               </button>
@@ -463,7 +461,7 @@ export default function FallbackPage() {
           )}
 
           <aside className="lg:col-span-1 card-sheen rounded-xl border bg-card p-5">
-            <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">الترتيب والحماية</h2>
+            <h2 className="text-xs font-medium text-muted-foreground">الترتيب والحماية</h2>
             <div className="mt-3 space-y-2.5 text-xs">
               <div className="flex items-start gap-2">
                 <span className="mt-1 size-1.5 rounded-full flex-shrink-0 bg-brand" />
@@ -478,14 +476,14 @@ export default function FallbackPage() {
                 <span className="text-muted-foreground">«تحسين للرصيد» يقترح ترتيبًا أمثل تراجعه ثم تحفظه أو تتجاهله.</span>
               </div>
             </div>
-            <p className="mt-3 border-t pt-3 text-[11px] text-muted-foreground">
+            <p className="mt-3 border-t pt-3 text-xs text-muted-foreground">
               تلميح: فعّل «تلقائي» لإعادة تطبيق الترتيب الأمثل كل بضع ساعات دون تدخّل.
             </p>
           </aside>
         </div>
 
         {tips.length > 0 && (
-          <section className="rounded-xl border border-brand/30 bg-brand/5 p-5">
+          <section className="rounded-xl border border-brand-border bg-brand-subtle p-5">
             <div className="flex items-baseline justify-between mb-3">
               <h2 className="text-sm font-semibold text-brand">تحسين الرصيد — ترتيب مقترح</h2>
               <span className="text-xs text-muted-foreground">راجع الترتيب الجديد أدناه، ثم احفظ أو تجاهل</span>

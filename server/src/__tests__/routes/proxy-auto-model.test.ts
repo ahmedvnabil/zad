@@ -10,7 +10,7 @@ async function request(app: Express, method: string, path: string, body?: any, h
 
   const res = await fetch(url, {
     method,
-    headers: { ...(body ? { 'Content-Type': 'application/json' } : {}), ...headers },
+    headers: { Authorization: `Bearer ${getUnifiedApiKey()}`, ...(body ? { 'Content-Type': 'application/json' } : {}), ...headers },
     body: body ? JSON.stringify(body) : undefined,
   });
 

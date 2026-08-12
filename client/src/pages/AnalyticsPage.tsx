@@ -1,3 +1,4 @@
+import { tokens } from '@/lib/format'
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
@@ -10,17 +11,13 @@ import { PageHeader } from '@/components/page-header'
 
 type TimeRange = '24h' | '7d' | '30d'
 
-function formatTokens(n?: number): string {
-  if (!n) return '0'
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`
-  return String(n)
-}
+
+const fmtTokens = (n: number | null | undefined) => tokens(n, '0')
 
 function Stat({ label, value, className, hint }: { label: string; value: string | number; className?: string; hint?: string }) {
   return (
-    <div className="card-sheen rounded-xl border bg-card px-4 py-3.5 transition-colors hover:border-info/40" title={hint}>
-      <p className="text-[11px] text-muted-foreground uppercase tracking-wider">{label}</p>
+    <div className="card-sheen rounded-xl border bg-card px-4 py-3.5 transition-colors hover:border-info-border" title={hint}>
+      <p className="text-xs text-muted-foreground">{label}</p>
       <p className={`text-2xl font-bold tabular-nums mt-1.5 ${className ?? ''}`}>{value}</p>
     </div>
   )
@@ -32,14 +29,14 @@ function Panel({ title, children, accent = 'info' }: { title: string; children: 
     <div className="rounded-xl border bg-card">
       <div className="flex items-center gap-2 px-4 py-3 border-b">
         <span className={`size-1.5 rounded-full ${dot}`} aria-hidden="true" />
-        <h3 className="text-sm font-semibold tracking-tight">{title}</h3>
+        <h2 className="text-sm font-semibold">{title}</h2>
       </div>
       <div className="p-4">{children}</div>
     </div>
   )
 }
 
-const axisStyle = { fontSize: 11, fill: 'var(--muted-foreground)' } as const
+const axisStyle = { fontSize: 12, fill: 'var(--muted-foreground)' } as const
 const gridStyle = 'var(--border)'
 const primaryFill = 'var(--foreground)'
 
@@ -89,7 +86,7 @@ export default function AnalyticsPage() {
         accent="info"
         icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/></svg>}
         actions={
-          <div className="flex gap-0.5 rounded-lg border bg-muted/30 p-0.5">
+          <div className="flex gap-0.5 rounded-lg border bg-muted p-0.5">
             {(['24h', '7d', '30d'] as TimeRange[]).map(r => (
               <button
                 key={r}
@@ -97,7 +94,7 @@ export default function AnalyticsPage() {
                 onClick={() => setRange(r)}
                 className={`rounded-md px-2.5 py-1 text-xs font-medium tabular-nums transition-colors ${
                   range === r
-                    ? 'bg-info/10 text-info'
+                    ? 'bg-info-subtle text-info'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
@@ -113,8 +110,8 @@ export default function AnalyticsPage() {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           <Stat label="الطلبات" value={summary?.totalRequests ?? 0} className="text-info" />
           <Stat label="نسبة النجاح" value={`${summary?.successRate ?? 0}%`} className="text-success" />
-          <Stat label="توكنز الدخل" value={formatTokens(summary?.totalInputTokens)} />
-          <Stat label="توكنز الخرج" value={formatTokens(summary?.totalOutputTokens)} />
+          <Stat label="توكنز الدخل" value={fmtTokens(summary?.totalInputTokens)} />
+          <Stat label="توكنز الخرج" value={fmtTokens(summary?.totalOutputTokens)} />
           <Stat label="متوسط زمن الاستجابة" value={`${summary?.avgLatencyMs ?? 0} ms`} />
           <Stat
             label="التوفير التقديري"
@@ -134,15 +131,15 @@ export default function AnalyticsPage() {
                 <Stat label="زمن الاستجابة p95" value={`${quality?.p95LatencyMs ?? 0} ms`} className="text-warn" />
                 <Stat label="نجاح من أول محاولة" value={quality?.firstTryRate == null ? '—' : `${quality.firstTryRate}%`} className="text-success" hint="نسبة الطلبات اللي خدمها أول نموذج بدون تحويل احتياطي" />
                 <div className="card-sheen rounded-xl border bg-card px-4 py-3.5">
-                  <p className="text-[11px] text-muted-foreground uppercase tracking-wider">أسباب الإنهاء</p>
+                  <p className="text-xs text-muted-foreground">أسباب الإنهاء</p>
                   <div className="mt-1.5 flex flex-wrap gap-1.5">
                     {(quality?.finishReasons ?? []).length === 0 ? (
                       <span className="text-xs text-muted-foreground">—</span>
                     ) : (
                       quality!.finishReasons.map(f => (
-                        <span key={f.reason} className="inline-flex h-5 items-center gap-1 rounded-md border bg-muted/40 px-1.5 text-[11px]">
+                        <span key={f.reason} className="inline-flex h-5 items-center gap-1 rounded-md border bg-muted px-1.5 text-xs">
                           <span className="font-mono">{f.reason}</span>
-                          <span className="text-muted-foreground tabular-nums">{f.count.toLocaleString()}</span>
+                          <span className="text-muted-foreground tabular-nums">{f.count.toLocaleString('ar-EG-u-nu-latn')}</span>
                         </span>
                       ))
                     )}
@@ -213,7 +210,7 @@ export default function AnalyticsPage() {
               {byModel.length === 0 ? (
                 <p className="text-sm text-muted-foreground text-center py-8">لا توجد بيانات بعد</p>
               ) : (
-                <div className="max-h-[360px] overflow-y-auto -mx-4">
+                <div tabIndex={0} className="max-h-[360px] overflow-y-auto -mx-4 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/70">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -234,8 +231,8 @@ export default function AnalyticsPage() {
                           <TableCell className="text-end tabular-nums">{m.requests}</TableCell>
                           <TableCell className="text-end tabular-nums">{m.successRate}%</TableCell>
                           <TableCell className="text-end tabular-nums">{m.avgLatencyMs} ms</TableCell>
-                          <TableCell className="text-end tabular-nums">{formatTokens(m.totalInputTokens)}</TableCell>
-                          <TableCell className="text-end tabular-nums pe-4">{formatTokens(m.totalOutputTokens)}</TableCell>
+                          <TableCell className="text-end tabular-nums">{fmtTokens(m.totalInputTokens)}</TableCell>
+                          <TableCell className="text-end tabular-nums pe-4">{fmtTokens(m.totalOutputTokens)}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -268,7 +265,7 @@ export default function AnalyticsPage() {
             {errors.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-8">لا أخطاء</p>
             ) : (
-              <div className="max-h-[240px] overflow-y-auto -mx-4">
+              <div tabIndex={0} className="max-h-[240px] overflow-y-auto -mx-4 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/70">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -283,7 +280,7 @@ export default function AnalyticsPage() {
                         <TableCell className="ps-4 text-xs">{e.platform}</TableCell>
                         <TableCell className="text-xs max-w-[200px] truncate">{e.error}</TableCell>
                         <TableCell className="text-end text-xs text-muted-foreground tabular-nums pe-4">
-                          {new Date(e.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          {new Date(e.createdAt).toLocaleTimeString('ar-EG-u-nu-latn', { hour: '2-digit', minute: '2-digit' })}
                         </TableCell>
                       </TableRow>
                     ))}

@@ -56,7 +56,7 @@ const PROVIDER_NAMES: Record<string, string> = {
 
 function fmt(n?: number | null): string {
   if (!n) return '0'
-  return n.toLocaleString('en-US')
+  return n.toLocaleString('ar-EG-u-nu-latn')
 }
 
 function fmtCtx(n?: number | null): string {
@@ -75,10 +75,10 @@ function money(n: number): string {
 
 function BigStat({ label, value, sub, accent }: { label: string; value: string; sub?: string; accent?: string }) {
   return (
-    <div className="rounded-lg border bg-card card-sheen px-4 py-4 transition-colors hover:border-brand/40">
-      <p className="text-[11px] text-muted-foreground tracking-wider">{label}</p>
+    <div className="rounded-lg border bg-card card-sheen px-4 py-4 transition-colors hover:border-brand-border">
+      <p className="text-xs text-muted-foreground">{label}</p>
       <p className={`text-3xl font-bold tabular-nums mt-1.5 ${accent ?? ''}`}>{value}</p>
-      {sub && <p className="text-[11px] text-muted-foreground mt-1">{sub}</p>}
+      {sub && <p className="text-xs text-muted-foreground mt-1">{sub}</p>}
     </div>
   )
 }
@@ -87,15 +87,15 @@ function Panel({ title, children, note }: { title: string; children: React.React
   return (
     <div className="rounded-lg border bg-card">
       <div className="px-4 py-3 border-b flex items-baseline justify-between gap-3">
-        <h3 className="text-sm font-medium">{title}</h3>
-        {note && <span className="text-[11px] text-muted-foreground">{note}</span>}
+        <h2 className="text-sm font-medium">{title}</h2>
+        {note && <span className="text-xs text-muted-foreground">{note}</span>}
       </div>
       <div className="p-4">{children}</div>
     </div>
   )
 }
 
-const axisStyle = { fontSize: 11, fill: 'var(--muted-foreground)' } as const
+const axisStyle = { fontSize: 12, fill: 'var(--muted-foreground)' } as const
 
 // ---- page -----------------------------------------------------------------
 
@@ -150,18 +150,18 @@ function QuickTry({ model, modelLabel, apiKey, onResetAuto, inputRef }: {
   return (
     <div className="rounded-xl border bg-card card-sheen p-4">
       <div className="flex items-center justify-between gap-3 flex-wrap">
-        <h3 className="text-sm font-medium flex items-center gap-2">
-          <span className="inline-flex size-6 items-center justify-center rounded-lg bg-brand/10 text-brand ring-1 ring-brand/25">
+        <h2 className="text-sm font-medium flex items-center gap-2">
+          <span className="inline-flex size-6 items-center justify-center rounded-lg bg-brand-subtle text-brand-subtle-foreground ring-1 ring-brand-border">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
           </span>
           جرّب زاد الآن
-        </h3>
-        <span className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground">
+        </h2>
+        <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
           النموذج:
           {model === 'auto' ? (
             <span className="text-foreground">تلقائي</span>
           ) : (
-            <span className="inline-flex items-center gap-1 rounded-md border border-brand/30 bg-brand/10 px-1.5 py-0.5 text-brand font-medium">
+            <span className="inline-flex items-center gap-1 rounded-md border border-brand-border bg-brand-subtle px-1.5 py-0.5 text-brand-subtle-foreground font-medium">
               {modelLabel}
               <button onClick={onResetAuto} title="رجوع للتلقائي" className="hover:text-foreground">✕</button>
             </span>
@@ -169,7 +169,7 @@ function QuickTry({ model, modelLabel, apiKey, onResetAuto, inputRef }: {
         </span>
       </div>
 
-      <div className="mt-3 flex gap-2 items-center rounded-xl border bg-background p-1.5 transition-colors focus-within:border-brand/40 focus-within:ring-2 focus-within:ring-brand/15">
+      <div className="mt-3 flex gap-2 items-center rounded-xl border bg-background p-1.5 transition-colors focus-within:border-brand-border focus-within:ring-2 focus-within:ring-brand/15">
         <input
           ref={inputRef}
           value={prompt}
@@ -178,7 +178,7 @@ function QuickTry({ model, modelLabel, apiKey, onResetAuto, inputRef }: {
           placeholder="اكتب سؤالاً سريعاً وجرّب… (⏎ للإرسال)"
           className="flex-1 bg-transparent px-2 py-1.5 text-sm focus:outline-none"
         />
-        <Button onClick={send} disabled={loading || !prompt.trim()} className="bg-brand text-white hover:bg-brand/90">
+        <Button onClick={send} disabled={loading || !prompt.trim()} className="bg-brand text-brand-foreground hover:bg-brand/90">
           {loading ? 'جارٍ…' : 'إرسال'}
         </Button>
       </div>
@@ -195,8 +195,8 @@ function QuickTry({ model, modelLabel, apiKey, onResetAuto, inputRef }: {
           {error && <p className="text-destructive">خطأ: {error}</p>}
           {result && (
             <>
-              <div className="whitespace-pre-wrap leading-relaxed max-h-56 overflow-y-auto">{result.content}</div>
-              <div className="mt-2 pt-2 border-t flex items-center gap-2 flex-wrap text-[11px] text-muted-foreground tabular-nums">
+              <div dir="auto" className="whitespace-pre-wrap leading-relaxed max-h-56 overflow-y-auto">{result.content}</div>
+              <div className="mt-2 pt-2 border-t flex items-center gap-2 flex-wrap text-xs text-muted-foreground tabular-nums">
                 <span className="inline-flex items-center gap-1 text-success"><span className="size-1.5 rounded-full bg-success" />خدمه</span>
                 {result.platform && <span className="text-foreground">{result.platform}</span>}
                 {result.model && <span className="font-mono">· {result.model}</span>}
@@ -229,7 +229,7 @@ export default function OverviewPage() {
   const tryProvider = (platform: string) => {
     const m = models.find(x => x.platform === platform)
     setTryModel(m?.modelId ?? 'auto')
-    tryRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    tryRef.current?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' })
     setTimeout(() => tryInputRef.current?.focus(), 300)
   }
 
@@ -312,41 +312,46 @@ export default function OverviewPage() {
     <div>
       {/* Branded hero */}
       <div className="hero-glow mb-8 pb-8 border-b">
-        <div className="inline-flex items-center gap-2 rounded-full border bg-card px-3 py-1 text-[11px] text-muted-foreground">
-          <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+        <div className="inline-flex items-center gap-2 rounded-full border bg-card px-3 py-1 text-xs text-muted-foreground">
+          <span className="size-1.5 rounded-full bg-success animate-pulse" />
           مفتوح المصدر · بدون بطاقة دفع
         </div>
         <div className="mt-4 flex items-center gap-3">
           <Logo size={44} />
-          <h1 className="text-4xl font-bold tracking-tight">زاد</h1>
+          <h1 className="text-4xl font-bold">زاد</h1>
         </div>
         <p className="mt-3 max-w-2xl text-lg text-muted-foreground leading-relaxed">
-<span className="text-brand-gradient font-semibold">زادك</span> من نماذج الذكاء الاصطناعي المجانية في واجهة واحدة متوافقة مع OpenAI —
+<span className="text-brand font-semibold">زادك</span> من نماذج الذكاء الاصطناعي المجانية في واجهة واحدة متوافقة مع OpenAI —
           مع تحويل احتياطي تلقائي، تحليلات حيّة، وتوفير حقيقي مقابل الواجهات المدفوعة.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-3">
         {/* Hero numbers — each tile is its own bento cell */}
-        <div className="col-span-6 sm:col-span-4 lg:col-span-2">
-          <BigStat label="نماذج مجانية" value={fmt(stats.totalModels)} sub="كلها بسعر $0" accent="text-emerald-600 dark:text-emerald-400" />
+        <div>
+          <BigStat label="نماذج مجانية" value={fmt(stats.totalModels)} sub="كلها بسعر $0" />
         </div>
-        <div className="col-span-6 sm:col-span-4 lg:col-span-2">
+        <div>
           <BigStat label="مزوّدون" value={fmt(stats.totalProviders)} sub={`${stats.activeProviders} نشط الآن`} />
         </div>
-        <div className="col-span-6 sm:col-span-4 lg:col-span-2">
-          <BigStat label="التكلفة الشهرية" value="$0" sub="بدون بطاقة دفع" accent="text-emerald-600 dark:text-emerald-400" />
+        <div>
+          <BigStat label="التكلفة الشهرية" value="$0" sub="بدون بطاقة دفع" />
         </div>
-        <div className="col-span-6 sm:col-span-4 lg:col-span-2">
-          <BigStat label="التوفير (آخر 30 يوم)" value={money(savings)} sub="مقابل واجهات مدفوعة مكافئة" accent="text-emerald-600 dark:text-emerald-400" />
+        <div>
+          <BigStat label="التوفير (آخر 30 يوم)" value={money(savings)} sub="مقابل واجهات مدفوعة مكافئة" />
         </div>
-        <div className="col-span-6 sm:col-span-4 lg:col-span-2">
+        <div>
           <BigStat label="طاقة الطلبات اليومية" value={fmt(stats.totalRpd)} sub="طلب/يوم (الحدود المعلومة)" />
         </div>
-        <div className="col-span-6 sm:col-span-4 lg:col-span-2">
+        <div>
           <BigStat label="أقصى نافذة سياق" value={fmtCtx(stats.maxCtx)} sub="توكن في الطلب الواحد" />
         </div>
+      </div>
 
+      {/* Bento below the strip. Kept as its own 12-column grid: its children are
+          written against 12 tracks, and mixing them into the stat strip forced
+          the browser to invent implicit columns and crushed every tile. */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 mt-4">
         {/* Quick-try widget — interactive single-shot playground */}
         <div className="lg:col-span-12" ref={tryRef}>
           <QuickTry model={tryModel} modelLabel={tryModelLabel} apiKey={keyData?.apiKey} onResetAuto={() => setTryModel('auto')} inputRef={tryInputRef} />
@@ -354,15 +359,15 @@ export default function OverviewPage() {
 
         {/* Free vs Paid compare — side by side bento cells */}
         <div className="lg:col-span-6">
-          <div className="rounded-xl border-2 border-emerald-500/40 bg-emerald-500/5 card-sheen p-5 h-full">
+          <div className="rounded-xl border-2 border-success-border bg-success-subtle card-sheen p-5 h-full">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">المجاني — اللي بتدفعه فعلاً</h3>
-              <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">$0</span>
+              <h2 className="text-sm font-semibold text-success-subtle-foreground">المجاني — اللي بتدفعه فعلاً</h2>
+              <span className="text-2xl font-bold text-success-subtle-foreground tabular-nums">$0</span>
             </div>
             <ul className="mt-3 space-y-1.5 text-sm">
-              <li className="flex justify-between border-b border-emerald-500/15 pb-1.5"><span className="text-muted-foreground">عدد النماذج</span><span className="tabular-nums font-medium">{fmt(stats.totalModels)}</span></li>
-              <li className="flex justify-between border-b border-emerald-500/15 pb-1.5"><span className="text-muted-foreground">سعر مليون توكن (دخل)</span><span className="tabular-nums font-medium">$0</span></li>
-              <li className="flex justify-between border-b border-emerald-500/15 pb-1.5"><span className="text-muted-foreground">سعر مليون توكن (خرج)</span><span className="tabular-nums font-medium">$0</span></li>
+              <li className="flex justify-between border-b border-success-border pb-1.5"><span className="text-muted-foreground">عدد النماذج</span><span className="tabular-nums font-medium">{fmt(stats.totalModels)}</span></li>
+              <li className="flex justify-between border-b border-success-border pb-1.5"><span className="text-muted-foreground">سعر مليون توكن (دخل)</span><span className="tabular-nums font-medium">$0</span></li>
+              <li className="flex justify-between border-b border-success-border pb-1.5"><span className="text-muted-foreground">سعر مليون توكن (خرج)</span><span className="tabular-nums font-medium">$0</span></li>
               <li className="flex justify-between"><span className="text-muted-foreground">بطاقة دفع مطلوبة</span><span className="font-medium">لا</span></li>
             </ul>
           </div>
@@ -371,7 +376,7 @@ export default function OverviewPage() {
         <div className="lg:col-span-6">
           <div className="rounded-xl border bg-card card-sheen p-5 h-full">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold">المدفوع — اللي كان هيتكلّف</h3>
+              <h2 className="text-sm font-semibold">المدفوع — اللي كان هيتكلّف</h2>
               <span className="text-2xl font-bold tabular-nums">{money(stats.blendedPerMillion)}</span>
             </div>
             <ul className="mt-3 space-y-1.5 text-sm">
@@ -380,9 +385,9 @@ export default function OverviewPage() {
               <li className="flex justify-between border-b pb-1.5"><span className="text-muted-foreground">سعر مليون توكن (خرج)</span><span className="tabular-nums font-medium">{money(stats.blendedOutput)}</span></li>
               <li className="flex justify-between"><span className="text-muted-foreground">بطاقة دفع مطلوبة</span><span className="font-medium">نعم</span></li>
             </ul>
-            <p className="text-[11px] text-muted-foreground mt-3">
+            <p className="text-xs text-muted-foreground mt-3">
               {pricingMeta && pricingMeta.matchedModels > 0 ? (
-                <>الأسعار الحقيقية من جدول LiteLLM — مطابقة {pricingMeta.matchedModels}/{pricingMeta.totalModels} نموذج{pricingMeta.updatedAt ? ` · آخر تحديث ${new Date(pricingMeta.updatedAt).toLocaleDateString('ar-EG')}` : ''}. الباقي تقديري حسب الفئة.</>
+                <>الأسعار الحقيقية من جدول LiteLLM — مطابقة {pricingMeta.matchedModels}/{pricingMeta.totalModels} نموذج{pricingMeta.updatedAt ? ` · آخر تحديث ${new Date(pricingMeta.updatedAt).toLocaleDateString('ar-EG-u-nu-latn')}` : ''}. الباقي تقديري حسب الفئة.</>
               ) : (
                 <>الأسعار تقديرية لنماذج مدفوعة بجودة مماثلة (USD لكل مليون توكن)، مش أسعار رسمية مضبوطة.</>
               )}
@@ -396,7 +401,7 @@ export default function OverviewPage() {
             <ResponsiveContainer width="100%" height={260}>
               <BarChart data={stats.providers} margin={{ top: 6, right: 6, left: -12, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="2 4" stroke="var(--border)" />
-                <XAxis dataKey="platform" tick={axisStyle} tickLine={false} axisLine={{ stroke: 'var(--border)' }} angle={-35} textAnchor="end" height={56} interval={0} />
+                <XAxis dataKey="platform" tick={axisStyle} tickLine={false} axisLine={{ stroke: 'var(--border-strong)' }} angle={-35} textAnchor="end" height={56} interval={0} />
                 <YAxis tick={axisStyle} tickLine={false} axisLine={false} />
                 <Tooltip contentStyle={{ backgroundColor: 'var(--popover)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }} />
                 <Bar dataKey="models" name="نماذج" fill="var(--brand)" radius={[3, 3, 0, 0]} />
@@ -416,7 +421,7 @@ export default function OverviewPage() {
                   <li key={p.platform}>
                     <div className="flex items-baseline justify-between gap-3">
                       <span className="text-sm font-medium truncate">
-                        <span className="text-muted-foreground font-mono text-[11px] me-1.5">{i + 1}.</span>
+                        <span className="text-muted-foreground font-mono text-xs me-1.5">{i + 1}.</span>
                         {PROVIDER_NAMES[p.platform] ?? p.platform}
                       </span>
                       <span className="text-sm font-bold tabular-nums text-brand">{fmt(p.models)}</span>
@@ -456,20 +461,20 @@ export default function OverviewPage() {
                     <TableRow key={p.platform}>
                       <TableCell className="ps-4 text-sm font-medium">
                         {PROVIDER_NAMES[p.platform] ?? p.platform}
-                        <span className="block text-[11px] text-muted-foreground font-mono">{p.platform}</span>
+                        <span className="block text-xs text-muted-foreground font-mono">{p.platform}</span>
                       </TableCell>
                       <TableCell className="text-center tabular-nums">{p.models}</TableCell>
                       <TableCell className="text-center tabular-nums">{p.rpm ? fmt(p.rpm) : '—'}</TableCell>
                       <TableCell className="text-center tabular-nums">{p.rpd ? fmt(p.rpd) : '—'}</TableCell>
                       <TableCell className="text-center tabular-nums">{fmtCtx(p.maxCtx)}</TableCell>
-                      <TableCell className="text-center tabular-nums">{money(p.paidBlended)}<span className="text-[11px] text-muted-foreground">/م</span></TableCell>
+                      <TableCell className="text-center tabular-nums">{money(p.paidBlended)}<span className="text-xs text-muted-foreground">/م</span></TableCell>
                       <TableCell className="text-center">
                         {active ? (
-                          <span className="inline-flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400">
-                            <span className="size-1.5 rounded-full bg-emerald-500" />{anonymous ? 'مجهول' : 'نشط'}
+                          <span className="inline-flex items-center gap-1 text-xs text-success-subtle-foreground">
+                            <span className="size-1.5 rounded-full bg-success" />{anonymous ? 'مجهول' : 'نشط'}
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+                          <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
                             <span className="size-1.5 rounded-full bg-muted-foreground/50" />يحتاج مفتاح
                           </span>
                         )}
@@ -490,7 +495,7 @@ export default function OverviewPage() {
               </TableBody>
             </Table>
           </div>
-          <p className="text-[11px] text-muted-foreground mt-3">
+          <p className="text-xs text-muted-foreground mt-3">
             «—» في الحدود معناه إن المزوّد بيحسب الاستهلاك بطريقة تانية (وقت GPU أو حصة شهرية) مش بعدد الطلبات. «مجهول» = يشتغل بدون مفتاح، «يحتاج مفتاح» = أضف مفتاحاً من صفحة المفاتيح لتفعيله.
           </p>
         </Panel>

@@ -48,7 +48,7 @@ export default function PlaygroundPage() {
   const availableModels = fallbackEntries.filter(e => e.keyCount > 0 && e.enabled)
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    messagesEndRef.current?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
   }, [messages])
 
   // Replay handoff from the Requests page: prefill the prompt + model.
@@ -174,12 +174,12 @@ export default function PlaygroundPage() {
           {messages.length === 0 ? (
             <div className="flex items-center justify-center h-full text-center">
               <div className="space-y-3 max-w-sm flex flex-col items-center">
-                <span className="inline-flex size-12 items-center justify-center rounded-2xl ring-1 ring-brand/25 bg-brand/10 text-brand">
+                <span className="inline-flex size-12 items-center justify-center rounded-2xl ring-1 ring-brand-border bg-brand-subtle text-brand">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                 </span>
                 <p className="text-base font-medium">أرسل رسالة للبدء.</p>
                 <p className="text-sm text-muted-foreground">
-                  باستخدام <span className="text-brand font-medium">{activeModelLabel}</span>. بدّل النماذج من اللوحة الجانبية.
+                  باستخدام <span className="text-brand-subtle-foreground font-medium">{activeModelLabel}</span>. بدّل النماذج من اللوحة الجانبية.
                 </p>
               </div>
             </div>
@@ -190,13 +190,13 @@ export default function PlaygroundPage() {
                   <div
                     className={`max-w-[78%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
                       msg.role === 'user'
-                        ? 'bg-brand text-white'
-                        : 'border bg-muted/60'
+                        ? 'bg-brand text-brand-foreground'
+                        : 'border bg-muted'
                     }`}
                   >
-                    <div className="whitespace-pre-wrap">{msg.content}</div>
+                    <div dir="auto" className="whitespace-pre-wrap">{msg.content}</div>
                     {msg.meta && (
-                      <div className="flex items-center gap-2 mt-2 flex-wrap text-[11px] opacity-70 tabular-nums">
+                      <div className="flex items-center gap-2 mt-2 flex-wrap text-xs opacity-70 tabular-nums">
                         {msg.meta.platform && <span>{msg.meta.platform}</span>}
                         {msg.meta.model && <span className="font-mono">· {msg.meta.model}</span>}
                         {msg.meta.latency != null && <span>· {msg.meta.latency} مللي ثانية</span>}
@@ -210,7 +210,7 @@ export default function PlaygroundPage() {
               ))}
               {loading && (
                 <div className="flex justify-start">
-                  <div className="border bg-muted/60 rounded-2xl px-4 py-3">
+                  <div className="border bg-muted rounded-2xl px-4 py-3">
                     <div className="flex gap-1">
                       <span className="size-1.5 rounded-full bg-brand/60 animate-bounce" style={{ animationDelay: '0ms' }} />
                       <span className="size-1.5 rounded-full bg-brand/60 animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -225,7 +225,7 @@ export default function PlaygroundPage() {
         </div>
 
         <div className="border-t bg-background/50 p-3">
-          <div className="flex gap-2 items-end rounded-xl border bg-background p-1.5 transition-colors focus-within:border-brand/40 focus-within:ring-2 focus-within:ring-brand/15">
+          <div className="flex gap-2 items-end rounded-xl border bg-background p-1.5 transition-colors focus-within:border-brand-border focus-within:ring-2 focus-within:ring-brand/15">
             <textarea
               ref={inputRef}
               value={input}
@@ -241,7 +241,7 @@ export default function PlaygroundPage() {
                 el.style.height = Math.min(el.scrollHeight, 160) + 'px'
               }}
             />
-            <Button onClick={handleSend} disabled={loading || !input.trim()} size="default" className="bg-brand text-white hover:bg-brand/90">
+            <Button onClick={handleSend} disabled={loading || !input.trim()} size="default" className="bg-brand text-brand-foreground hover:bg-brand/90">
               {loading ? 'جارٍ الإرسال…' : 'إرسال'}
             </Button>
           </div>
@@ -253,7 +253,7 @@ export default function PlaygroundPage() {
           <div className="rounded-xl border bg-card card-sheen p-4 space-y-3">
             <label className="block text-sm font-medium">النموذج</label>
             <Select value={selectedModel} onValueChange={(v) => setSelectedModel(v ?? 'auto')}>
-              <SelectTrigger className="w-full border-brand/30 text-brand focus:ring-brand">
+              <SelectTrigger className="w-full border-brand-border text-brand-subtle-foreground focus:ring-brand">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -271,7 +271,7 @@ export default function PlaygroundPage() {
           </div>
 
           <div className="rounded-xl border bg-card card-sheen p-4 space-y-2">
-            <h3 className="text-sm font-medium">كيف يعمل</h3>
+            <h2 className="text-sm font-medium">كيف يعمل</h2>
             <p className="text-xs text-muted-foreground leading-relaxed">
               زاد يختار النموذج المناسب تلقائياً ويحوّل احتياطياً لو فشل واحد.
             </p>
@@ -279,7 +279,7 @@ export default function PlaygroundPage() {
 
           {lastResponseMeta && (
             <div className="rounded-xl border bg-card card-sheen p-4 space-y-2">
-              <h3 className="text-sm font-medium">آخر استجابة</h3>
+              <h2 className="text-sm font-medium">آخر استجابة</h2>
               <dl className="space-y-1.5 text-xs tabular-nums">
                 {lastResponseMeta.platform && (
                   <div className="flex items-center justify-between gap-2">

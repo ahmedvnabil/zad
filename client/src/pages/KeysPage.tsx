@@ -5,8 +5,10 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { PageHeader } from '@/components/page-header'
 import type { ApiKey, Platform } from '../../../shared/types'
+import { tokens } from '@/lib/format'
 
 const PLATFORMS: { value: Platform; label: string }[] = [
   { value: 'google', label: 'Google AI Studio' },
@@ -139,14 +141,12 @@ function platformLabel(platform: string) {
   return PLATFORMS.find(p => p.value === platform)?.label ?? platform
 }
 
-function formatTokens(value: number | null | undefined) {
-  if (value == null) return 'غير معروف'
-  if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(1)}B`
-  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`
-  if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K`
-  return value.toLocaleString()
-}
 
+const fmtTokens = (n: number | null | undefined) => tokens(n, 'غير معروف')
+
+// Provider usage was five <span> headers over a grid of <div>s: to a screen
+// reader that is a flat stream of 30+ unlabelled numbers, with no way to know
+// that "45.2M" is the "المتبقّي" column for Groq. It is a real <table> now.
 function ProviderUsageSection({ rows }: { rows: ProviderUsage[] }) {
   const visible = rows
     .filter(row => row.keyCount > 0 || row.usedTokens > 0)
@@ -163,39 +163,43 @@ function ProviderUsageSection({ rows }: { rows: ProviderUsage[] }) {
           <p className="text-sm text-muted-foreground">لا توجد بيانات استخدام بعد.</p>
         </div>
       ) : (
-        <div>
-          <div className="grid grid-cols-[1.4fr_.8fr_.8fr_.8fr_.8fr] gap-3 px-4 py-2 text-[11px] uppercase tracking-wide text-muted-foreground bg-muted/30 border-b">
-            <span>المزوّد</span>
-            <span className="text-end">المُستخدَم</span>
-            <span className="text-end">الميزانية</span>
-            <span className="text-end">المتبقّي</span>
-            <span className="text-end">الطلبات</span>
-          </div>
-          <div className="divide-y">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="ps-4">المزوّد</TableHead>
+              <TableHead className="text-end">المُستخدَم</TableHead>
+              <TableHead className="text-end">الميزانية</TableHead>
+              <TableHead className="text-end">المتبقّي</TableHead>
+              <TableHead className="text-end pe-4">الطلبات</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {visible.map(row => (
-              <div key={row.platform} className="px-4 py-3">
-                <div className="grid grid-cols-[1.4fr_.8fr_.8fr_.8fr_.8fr] gap-3 items-center text-sm">
-                  <div className="min-w-0">
-                    <div className="font-medium truncate">{platformLabel(row.platform)}</div>
-                    <div className="text-xs text-success tabular-nums">
-                      {row.healthyKeyCount}/{row.keyCount} مفاتيح تعمل
-                    </div>
+              <TableRow key={row.platform}>
+                <TableCell className="ps-4 min-w-0">
+                  <div className="font-medium truncate">{platformLabel(row.platform)}</div>
+                  <div className="text-xs text-success-subtle-foreground tabular-nums">
+                    {row.healthyKeyCount}/{row.keyCount} مفاتيح تعمل
                   </div>
-                  <span className="text-end tabular-nums">{formatTokens(row.usedTokens)}</span>
-                  <span className="text-end tabular-nums text-muted-foreground">{formatTokens(row.budgetTokens)}</span>
-                  <span className="text-end tabular-nums text-muted-foreground">{formatTokens(row.remainingTokens)}</span>
-                  <span className="text-end tabular-nums text-muted-foreground">{row.requests.toLocaleString()}</span>
-                </div>
-                <div className="mt-2 h-1.5 rounded-full bg-muted overflow-hidden">
                   <div
-                    className="h-full bg-brand"
-                    style={{ width: `${row.usedPercent ?? 0}%` }}
-                  />
-                </div>
-              </div>
+                    role="progressbar"
+                    aria-valuenow={Math.round(row.usedPercent ?? 0)}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-label={`استخدام ${platformLabel(row.platform)}`}
+                    className="mt-2 h-1.5 rounded-full bg-muted overflow-hidden"
+                  >
+                    <div className="h-full bg-brand" style={{ width: `${row.usedPercent ?? 0}%` }} />
+                  </div>
+                </TableCell>
+                <TableCell className="text-end tabular-nums">{fmtTokens(row.usedTokens)}</TableCell>
+                <TableCell className="text-end tabular-nums text-muted-foreground">{fmtTokens(row.budgetTokens)}</TableCell>
+                <TableCell className="text-end tabular-nums text-muted-foreground">{fmtTokens(row.remainingTokens)}</TableCell>
+                <TableCell className="text-end pe-4 tabular-nums text-muted-foreground">{row.requests.toLocaleString('ar-EG-u-nu-latn')}</TableCell>
+              </TableRow>
             ))}
-          </div>
-        </div>
+          </TableBody>
+        </Table>
       )}
     </section>
   )
@@ -214,14 +218,14 @@ function ProviderDirectory({ keys }: { keys: ApiKey[] }) {
           if (!meta) return null
           const isConfigured = configured.has(provider.value)
           return (
-            <div key={provider.value} className="rounded-xl border bg-card p-4 transition-colors hover:border-brand/40">
+            <div key={provider.value} className="rounded-xl border bg-card p-4 transition-colors hover:border-brand-border">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <h3 className="text-sm font-medium truncate">{provider.label}</h3>
-                  <p className="text-xs text-success mt-1">{meta.credit}</p>
-                  {meta.keyHint && <code className="block text-[11px] font-mono text-muted-foreground mt-2">{meta.keyHint}</code>}
+                  <h2 className="text-sm font-medium truncate">{provider.label}</h2>
+                  <p className="text-xs text-success-subtle-foreground mt-1">{meta.credit}</p>
+                  {meta.keyHint && <code className="block text-xs font-mono text-muted-foreground mt-2">{meta.keyHint}</code>}
                 </div>
-                <span className={`text-[11px] rounded-full px-2 py-0.5 ring-1 ${isConfigured ? 'bg-success/10 text-success ring-success/30' : 'bg-muted text-muted-foreground ring-transparent'}`}>
+                <span className={`text-xs rounded-full px-2 py-0.5 ring-1 ${isConfigured ? 'bg-success-subtle text-success-subtle-foreground ring-success-border' : 'bg-muted text-muted-foreground ring-transparent'}`}>
                   {isConfigured ? 'مُضاف' : 'متاح'}
                 </span>
               </div>
@@ -229,7 +233,7 @@ function ProviderDirectory({ keys }: { keys: ApiKey[] }) {
                 href={meta.href}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex mt-4 text-xs font-medium text-brand underline underline-offset-4 hover:no-underline"
+                className="inline-flex mt-4 text-xs font-medium text-brand-subtle-foreground underline underline-offset-4 hover:no-underline"
               >
                 احصل على مفتاح
               </a>
@@ -269,7 +273,7 @@ function UnifiedKeySection() {
   }
 
   return (
-    <section className="rounded-xl border border-brand/30 bg-brand/5 card-sheen p-5">
+    <section className="rounded-xl border border-brand-border bg-brand-subtle card-sheen p-5">
       <div className="flex items-start justify-between gap-4 mb-3">
         <div>
           <h2 className="text-sm font-semibold text-brand">مفتاح API الموحّد الخاص بك</h2>
@@ -348,14 +352,14 @@ function CustomProviderRow({ p }: { p: CustomProvider }) {
       <div className="flex items-center justify-between gap-2">
         <div className="min-w-0">
           <span className="text-sm font-medium">{p.name}</span>
-          <span className="ms-2 text-[11px] text-muted-foreground font-mono">{p.platform}</span>
+          <span className="ms-2 text-xs text-muted-foreground font-mono">{p.platform}</span>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <span className={`inline-flex items-center gap-1 text-[11px] ${p.active ? 'text-success' : 'text-muted-foreground'}`}>
+          <span className={`inline-flex items-center gap-1 text-xs ${p.active ? 'text-success' : 'text-muted-foreground'}`}>
             <span className={`size-1.5 rounded-full ${p.active ? 'bg-success' : 'bg-muted-foreground/50'}`} />
             {p.active ? 'نشط' : 'متوقف'}
           </span>
-          <span className="text-[11px] text-muted-foreground tabular-nums">{p.modelCount} نموذج · {p.keyCount} مفتاح</span>
+          <span className="text-xs text-muted-foreground tabular-nums">{p.modelCount} نموذج · {p.keyCount} مفتاح</span>
           <Button variant="ghost" size="xs" className="text-destructive"
             onClick={() => { if (confirm(`حذف المزوّد "${p.name}"؟ هيتشال هو وموديلاته ومفاتيحه.`)) del.mutate() }}>
             حذف
@@ -394,8 +398,8 @@ function CustomProviders() {
   return (
     <section className="rounded-xl border bg-card card-sheen overflow-hidden">
       <div className="px-4 py-3 border-b flex items-baseline justify-between gap-3">
-        <h3 className="text-sm font-medium">مزوّدون مخصّصون</h3>
-        <span className="text-[11px] text-muted-foreground">أي خدمة متوافقة مع OpenAI (Ollama محلي، vLLM، LM Studio…)</span>
+        <h2 className="text-sm font-medium">مزوّدون مخصّصون</h2>
+        <span className="text-xs text-muted-foreground">أي خدمة متوافقة مع OpenAI (Ollama محلي، vLLM، LM Studio…)</span>
       </div>
       <div className="p-4 space-y-3">
         {providers.length === 0 ? (
@@ -405,20 +409,20 @@ function CustomProviders() {
         )}
 
         <div className="rounded-lg border border-dashed p-3 space-y-2">
-          <p className="text-[11px] text-muted-foreground">إضافة مزوّد جديد</p>
+          <p className="text-xs text-muted-foreground">إضافة مزوّد جديد</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <div>
-              <Label className="text-[11px] text-muted-foreground">الاسم</Label>
-              <Input value={name} onChange={e => setName(e.target.value)} className="mt-1" placeholder="Ollama المحلي" />
+              <Label htmlFor="provider-name" className="text-xs text-muted-foreground">الاسم</Label>
+              <Input id="provider-name" value={name} onChange={e => setName(e.target.value)} className="mt-1" placeholder="Ollama المحلي" />
             </div>
             <div>
-              <Label className="text-[11px] text-muted-foreground">المعرّف (slug)</Label>
-              <Input value={slug} onChange={e => setSlug(e.target.value)} dir="ltr" className="mt-1 font-mono text-xs" placeholder="ollama-local" />
+              <Label htmlFor="provider-slug" className="text-xs text-muted-foreground">المعرّف (slug)</Label>
+              <Input id="provider-slug" value={slug} onChange={e => setSlug(e.target.value)} dir="ltr" className="mt-1 font-mono text-xs" placeholder="ollama-local" />
             </div>
           </div>
           <div>
-            <Label className="text-[11px] text-muted-foreground">رابط القاعدة (Base URL)</Label>
-            <Input value={baseUrl} onChange={e => setBaseUrl(e.target.value)} dir="ltr" className="mt-1 font-mono text-xs" placeholder="http://192.168.1.50:11434/v1" />
+            <Label htmlFor="provider-base-url" className="text-xs text-muted-foreground">رابط القاعدة (Base URL)</Label>
+            <Input id="provider-base-url" value={baseUrl} onChange={e => setBaseUrl(e.target.value)} dir="ltr" className="mt-1 font-mono text-xs" placeholder="http://192.168.1.50:11434/v1" />
           </div>
           {add.isError && <p className="text-[12px] text-destructive">{(add.error as any)?.message ?? 'فشل الإضافة'}</p>}
           <div className="flex justify-end">
@@ -557,7 +561,7 @@ export default function KeysPage() {
               {grouped.map(group => (
                 <div key={group.value}>
                   <div className="flex items-baseline justify-between mb-2">
-                    <h3 className="text-sm font-medium">{group.label}</h3>
+                    <h2 className="text-sm font-medium">{group.label}</h2>
                     <span className="text-xs text-muted-foreground tabular-nums">
                       {group.keys.length} {group.keys.length === 1 ? 'مفتاح' : 'مفاتيح'}
                     </span>
@@ -568,15 +572,15 @@ export default function KeysPage() {
                       const status = h?.status ?? k.status
                       const lastChecked = h?.lastCheckedAt
                       return (
-                        <div key={k.id} className="flex items-center gap-3 px-4 py-3 hover:bg-muted/40 transition-colors">
+                        <div key={k.id} className="flex items-center gap-3 px-4 py-3 hover:bg-muted transition-colors">
                           <span className={`size-1.5 rounded-full flex-shrink-0 ${statusDot[status] ?? statusDot.unknown}`} />
                           <code className="text-xs font-mono flex-shrink-0">{k.maskedKey}</code>
                           {k.label && <span className="text-xs text-muted-foreground">{k.label}</span>}
                           <span className={`text-xs font-medium ${statusText[status] ?? statusText.unknown}`}>{statusLabel[status] ?? status}</span>
                           <div className="flex-1" />
                           {lastChecked && (
-                            <span className="text-[11px] text-muted-foreground tabular-nums">
-                              {new Date(lastChecked).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            <span className="text-xs text-muted-foreground tabular-nums">
+                              {new Date(lastChecked).toLocaleTimeString('ar-EG-u-nu-latn', { hour: '2-digit', minute: '2-digit' })}
                             </span>
                           )}
                           <Button variant="ghost" size="xs" onClick={() => checkKey.mutate(k.id)} disabled={checkKey.isPending}>
@@ -602,9 +606,9 @@ export default function KeysPage() {
           <div className="px-4 py-3 border-b text-sm font-medium">إضافة مفتاح مزوّد</div>
           <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-3 p-4">
             <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">المنصّة</Label>
+              <Label id="key-platform-label" className="text-xs text-muted-foreground">المنصّة</Label>
               <Select value={platform} onValueChange={(v) => setPlatform(v as Platform)}>
-                <SelectTrigger className="w-[220px]">
+                <SelectTrigger aria-labelledby="key-platform-label" className="w-[220px]">
                   <SelectValue placeholder="اختر المزوّد" />
                 </SelectTrigger>
                 <SelectContent>
@@ -616,8 +620,9 @@ export default function KeysPage() {
             </div>
             {needsAccountId && (
               <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">معرّف الحساب</Label>
+                <Label htmlFor="key-account-id" className="text-xs text-muted-foreground">معرّف الحساب</Label>
                 <Input
+                  id="key-account-id"
                   value={accountId}
                   onChange={e => setAccountId(e.target.value)}
                   placeholder="a1b2c3d4…"
@@ -626,8 +631,10 @@ export default function KeysPage() {
               </div>
             )}
             <div className="space-y-1.5 flex-1 min-w-[240px]">
-              <Label className="text-xs text-muted-foreground">{needsAccountId ? 'توكن API' : 'مفتاح API'}</Label>
+              <Label htmlFor="key-api" className="text-xs text-muted-foreground">{needsAccountId ? 'توكن API' : 'مفتاح API'}</Label>
               <Input
+                id="key-api"
+                autoComplete="off"
                 type="password"
                 value={apiKey}
                 onChange={e => setApiKey(e.target.value)}
@@ -636,8 +643,9 @@ export default function KeysPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">التسمية</Label>
+              <Label htmlFor="key-label" className="text-xs text-muted-foreground">التسمية</Label>
               <Input
+                id="key-label"
                 value={label}
                 onChange={e => setLabel(e.target.value)}
                 placeholder="اختياري"
@@ -649,7 +657,7 @@ export default function KeysPage() {
             </Button>
           </form>
           {addKey.isError && (
-            <p className="text-destructive text-xs px-4 pb-4 -mt-1">{(addKey.error as Error).message}</p>
+            <p className="text-destructive-subtle-foreground text-xs px-4 pb-4 -mt-1">{(addKey.error as Error).message}</p>
           )}
             </section>
 

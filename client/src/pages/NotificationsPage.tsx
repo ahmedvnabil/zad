@@ -25,7 +25,7 @@ function Card({ title, desc, children }: { title: string; desc?: string; childre
   return (
     <div className="rounded-xl border bg-card card-sheen">
       <div className="px-4 py-3 border-b">
-        <h3 className="text-sm font-medium">{title}</h3>
+        <h2 className="text-sm font-medium">{title}</h2>
         {desc && <p className="text-[12px] text-muted-foreground mt-0.5">{desc}</p>}
       </div>
       <div className="p-4">{children}</div>
@@ -74,7 +74,7 @@ export default function NotificationsPage() {
         accent="warn"
         icon={bellIcon}
         actions={
-          <span className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-[12px] ${connected ? 'text-success border-success/30 bg-success/10' : 'text-muted-foreground'}`}>
+          <span className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-[12px] ${connected ? 'text-success-subtle-foreground border-success-border bg-success-subtle' : 'text-muted-foreground'}`}>
             <span className={`size-1.5 rounded-full ${connected ? 'bg-success animate-pulse' : 'bg-muted-foreground/50'}`} />
             {connected ? 'متصل' : 'غير متصل'}
           </span>
@@ -87,16 +87,18 @@ export default function NotificationsPage() {
           <Card title="ربط بوت تليجرام" desc="التوكن بيتخزّن مشفّراً على سيرفرك ومش بيظهر تاني.">
             <div className="space-y-4">
               <div>
-                <Label className="text-xs text-muted-foreground">توكن البوت (Bot Token)</Label>
+                <Label htmlFor="tg-token" className="text-xs text-muted-foreground">توكن البوت (Bot Token)</Label>
                 <Input
+                  id="tg-token"
                   type="password" className="mt-1 font-mono" dir="ltr"
                   placeholder={cfg?.hasToken ? 'محفوظ ••••••••  — اتركه فارغاً للإبقاء عليه' : '123456:ABC-DEF…'}
                   value={token} onChange={e => setToken(e.target.value)}
                 />
               </div>
               <div>
-                <Label className="text-xs text-muted-foreground">معرّف المحادثة (Chat ID)</Label>
+                <Label htmlFor="tg-chat-id" className="text-xs text-muted-foreground">معرّف المحادثة (Chat ID)</Label>
                 <Input
+                  id="tg-chat-id"
                   className="mt-1 font-mono tabular-nums" dir="ltr" placeholder="123456789"
                   value={chatId} onChange={e => setChatId(e.target.value)}
                 />
@@ -104,9 +106,10 @@ export default function NotificationsPage() {
               <div className="flex items-center justify-between rounded-lg border bg-background px-3 py-2.5">
                 <div>
                   <p className="text-sm font-medium">تفعيل الإشعارات</p>
-                  <p className="text-[11px] text-muted-foreground">المفتاح الرئيسي — يوقف/يشغّل كل التنبيهات.</p>
+                  <p className="text-xs text-muted-foreground">المفتاح الرئيسي — يوقف/يشغّل كل التنبيهات.</p>
                 </div>
                 <Switch
+                  aria-label="تفعيل الإشعارات"
                   checked={cfg?.master ?? false}
                   onCheckedChange={c => saveMut.mutate({ enabled: c })}
                 />
@@ -138,10 +141,12 @@ export default function NotificationsPage() {
               {EVENT_META.map(ev => (
                 <div key={ev.key} className="flex items-center justify-between rounded-lg border bg-background px-3 py-2.5">
                   <div className="min-w-0 pe-3">
-                    <p className="text-sm font-medium">{ev.label}</p>
-                    <p className="text-[11px] text-muted-foreground">{ev.desc}</p>
+                    <p id={`ev-${ev.key}-label`} className="text-sm font-medium">{ev.label}</p>
+                    <p id={`ev-${ev.key}-desc`} className="text-xs text-muted-foreground">{ev.desc}</p>
                   </div>
                   <Switch
+                    aria-labelledby={`ev-${ev.key}-label`}
+                    aria-describedby={`ev-${ev.key}-desc`}
                     checked={cfg?.events?.[ev.key] ?? true}
                     onCheckedChange={c => saveMut.mutate({ events: { [ev.key]: c } })}
                   />
@@ -154,15 +159,21 @@ export default function NotificationsPage() {
         {/* setup guide (right) */}
         <div className="lg:col-span-1">
           <div className="rounded-xl border bg-card card-sheen lg:sticky lg:top-20">
-            <div className="px-4 py-3 border-b"><h3 className="text-sm font-medium">إزاي تجيب التوكن و chat id؟</h3></div>
-            <div className="p-4 space-y-3 text-[13px] text-muted-foreground">
-              <p><b className="text-foreground">١.</b> على تليجرام كلّم <span className="font-mono text-brand" dir="ltr">@BotFather</span> وابعت <span className="font-mono" dir="ltr">/newbot</span> — هياخد منك اسم ويوزرنيم ويديك التوكن.</p>
-              <p><b className="text-foreground">٢.</b> ابعت أي رسالة لبوتك الجديد.</p>
-              <p><b className="text-foreground">٣.</b> افتح في المتصفح (غيّر <span className="font-mono" dir="ltr">&lt;TOKEN&gt;</span>):</p>
-              <p className="font-mono text-[11px] text-foreground bg-background border rounded-lg p-2 break-all" dir="ltr">https://api.telegram.org/bot&lt;TOKEN&gt;/getUpdates</p>
-              <p><b className="text-foreground">٤.</b> دوّر على <span className="font-mono" dir="ltr">"chat":{'{'}"id":…{'}'}</span> — الرقم ده هو الـ chat id.</p>
-              <p><b className="text-foreground">٥.</b> الصقهم فوق، فعّل الإشعارات، واضغط «إرسال رسالة اختبار».</p>
-            </div>
+            <div className="px-4 py-3 border-b"><h2 className="text-sm font-medium">إزاي تجيب التوكن و chat id؟</h2></div>
+            {/* A real <ol>: assistive tech announces "list, 5 items" and offers
+                step navigation, and the markers render in the document's own
+                numbering system instead of five hand-typed Arabic-Indic digits
+                sitting beside Latin ones everywhere else in the app. */}
+            <ol className="p-4 ps-8 space-y-3 text-[13px] text-muted-foreground list-decimal marker:text-foreground marker:font-bold">
+              <li>على تليجرام كلّم <span className="font-mono text-brand" dir="ltr">@BotFather</span> وابعت <span className="font-mono" dir="ltr">/newbot</span> — هياخد منك اسم ويوزرنيم ويديك التوكن.</li>
+              <li>ابعت أي رسالة لبوتك الجديد.</li>
+              <li>
+                افتح في المتصفح (غيّر <span className="font-mono" dir="ltr">&lt;TOKEN&gt;</span>):
+                <p className="mt-2 font-mono text-xs text-foreground bg-background border rounded-lg p-2 break-all" dir="ltr">https://api.telegram.org/bot&lt;TOKEN&gt;/getUpdates</p>
+              </li>
+              <li>دوّر على <span className="font-mono" dir="ltr">"chat":{'{'}"id":…{'}'}</span> — الرقم ده هو الـ chat id.</li>
+              <li>الصقهم فوق، فعّل الإشعارات، واضغط «إرسال رسالة اختبار».</li>
+            </ol>
           </div>
         </div>
       </div>

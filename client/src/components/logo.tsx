@@ -39,7 +39,7 @@ export function BrandLockup() {
   return (
     <div className="flex items-center gap-2">
       <Logo size={26} />
-      <span className="text-lg font-bold tracking-tight">زاد</span>
+      <span className="text-lg font-bold">زاد</span>
     </div>
   )
 }

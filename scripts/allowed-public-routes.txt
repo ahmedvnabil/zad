@@ -1,0 +1,10 @@
+# /api routes that are deliberately reachable without the unified key.
+#
+# One route prefix per line, exactly as mounted in server/src/app.ts.
+# Every entry is a hole in the control plane, so justify each one and keep the
+# list short. checked by scripts/check-auth-coverage.sh
+
+# Liveness probe. Returns status, the demo flag, and a timestamp — nothing
+# else. The dashboard needs the demo flag before it has a key, and /api/health
+# is owner-only.
+/api/ping
