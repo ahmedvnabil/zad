@@ -165,9 +165,12 @@ registryRouter.post('/refresh', async (req: Request, res: Response) => {
   }
 });
 
+// Zod 4 z.url() accepts any WHATWG URL. Import overrides stay http(s) only.
+const httpUrl = z.url({ protocol: /^https?$/ });
+
 const importBody = z.object({
   // override the base URL when the registry entry has `api: null`
-  baseUrlOverride: z.string().url().optional(),
+  baseUrlOverride: httpUrl.optional(),
   // a different local platform slug (when there's a collision with an existing provider)
   platformOverride: z.string().regex(/^[a-z0-9][a-z0-9-]{1,29}$/).optional(),
   // limit which models to seed (omit = all enabled by capability)
@@ -185,7 +188,7 @@ registryRouter.post('/import/:id', async (req: Request, res: Response) => {
 
   const parsed = importBody.safeParse(req.body ?? {});
   if (!parsed.success) {
-    return res.status(400).json({ error: { message: parsed.error.errors.map(e => e.message).join(', ') } });
+    return res.status(400).json({ error: { message: parsed.error.issues.map(e => e.message).join(', ') } });
   }
   const { baseUrlOverride, platformOverride, modelIds, textOnly } = parsed.data;
 
