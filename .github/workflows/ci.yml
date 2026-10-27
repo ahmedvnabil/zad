@@ -26,11 +26,14 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      # The CSP test requests `/` and reads helmet's policy. Without the SPA
+      # shell, `send` answers 404 and replaces that policy with
+      # `default-src 'none'`.
+      - name: Build client
+        run: npm run build -w client
+
       - name: Run server tests
         run: npm test -w server
 
       - name: Build server
         run: npm run build -w server
-
-      - name: Build client
-        run: npm run build -w client
