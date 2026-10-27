@@ -57,12 +57,12 @@
 
 ### 🚀 التشغيل السريع (Self-host)
 
-> المتطلبات: **Node.js ≥ 20** + git. الخطوة الوحيدة المختلفة بين الأنظمة هي تثبيتهما:
+> المتطلبات: **Node.js ≥ 22.12** + git. الخطوة الوحيدة المختلفة بين الأنظمة هي تثبيتهما:
 
 | النظام | تثبيت المتطلبات |
 |---|---|
 | 🍎 **macOS** | `brew install node git` |
-| 🐧 **Linux** (Debian/Ubuntu) | `curl -fsSL https://deb.nodesource.com/setup_20.x \| sudo -E bash -` ثم `sudo apt install -y nodejs git` |
+| 🐧 **Linux** (Debian/Ubuntu) | `curl -fsSL https://deb.nodesource.com/setup_22.x \| sudo -E bash -` ثم `sudo apt install -y nodejs git` |
 | 🪟 **Windows** (PowerShell) | `winget install OpenJS.NodeJS.LTS Git.Git` |
 
 بعدها الأوامر واحدة على كل الأنظمة (Terminal أو PowerShell):
@@ -219,12 +219,12 @@ Same models. Same quality. Different plumbing. The free tiers carrying that $0 a
 
 ### 🚀 Quick start (self-host)
 
-> Requirements: **Node.js ≥ 20** + git.
+> Requirements: **Node.js ≥ 22.12** + git.
 
 | OS | Install requirements |
 |---|---|
 | 🍎 **macOS** | `brew install node git` |
-| 🐧 **Linux** (Debian/Ubuntu) | `curl -fsSL https://deb.nodesource.com/setup_20.x \| sudo -E bash -` then `sudo apt install -y nodejs git` |
+| 🐧 **Linux** (Debian/Ubuntu) | `curl -fsSL https://deb.nodesource.com/setup_22.x \| sudo -E bash -` then `sudo apt install -y nodejs git` |
 | 🪟 **Windows** (PowerShell) | `winget install OpenJS.NodeJS.LTS Git.Git` |
 
 ```bash
