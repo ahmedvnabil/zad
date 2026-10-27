@@ -195,7 +195,7 @@ const assistantMessageSchema = z.object({
   const hasToolCalls = (msg.tool_calls?.length ?? 0) > 0;
   return hasContent || hasToolCalls;
 }, {
-  message: 'assistant messages must include non-empty content or tool_calls',
+  error: 'assistant messages must include non-empty content or tool_calls',
 });
 
 const toolMessageSchema = z.object({
@@ -234,7 +234,7 @@ const chatCompletionSchema = z.object({
   ])).min(1),
   model: z.string().optional(),
   temperature: z.number().min(0).max(2).optional(),
-  max_tokens: z.number().int().positive().optional(),
+  max_tokens: z.int().positive().optional(),
   top_p: z.number().min(0).max(1).optional(),
   stream: z.boolean().optional(),
   tools: z.array(toolDefinitionSchema).optional(),
@@ -272,7 +272,7 @@ proxyRouter.post('/chat/completions', async (req: Request, res: Response) => {
   if (!parsed.success) {
     res.status(400).json({
       error: {
-        message: `Invalid request: ${parsed.error.errors.map(e => e.message).join(', ')}`,
+        message: `Invalid request: ${parsed.error.issues.map(e => e.message).join(', ')}`,
         type: 'invalid_request_error',
       },
     });
