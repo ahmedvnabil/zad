@@ -21,21 +21,26 @@ function authorized(req: Request): boolean {
 const modelSchema = z.object({
   modelId: z.string().min(1),
   displayName: z.string().min(1),
-  contextWindow: z.number().int().positive().optional(),
-  rpm: z.number().int().nonnegative().optional(),
-  rpd: z.number().int().nonnegative().optional(),
-  intelligenceRank: z.number().int().optional(),
-  speedRank: z.number().int().optional(),
+  contextWindow: z.int().positive().optional(),
+  rpm: z.int().nonnegative().optional(),
+  rpd: z.int().nonnegative().optional(),
+  intelligenceRank: z.int().optional(),
+  speedRank: z.int().optional(),
   sizeLabel: z.string().optional(),
 });
 
+// Zod 4 z.url() accepts any WHATWG URL. Provider base URLs stay http(s) only.
+const httpUrl = z.url({ protocol: /^https?$/ });
+
 const addProviderSchema = z.object({
-  platform: z.string().regex(/^[a-z0-9][a-z0-9-]{1,29}$/, 'platform لازم يكون slug صغير (a-z 0-9 -)'),
+  platform: z.string().regex(/^[a-z0-9][a-z0-9-]{1,29}$/, {
+    error: 'platform لازم يكون slug صغير (a-z 0-9 -)',
+  }),
   name: z.string().min(1),
-  baseUrl: z.string().url(),
+  baseUrl: httpUrl,
   apiFormat: z.literal('openai').optional(),
-  extraHeaders: z.record(z.string()).optional(),
-  timeoutMs: z.number().int().positive().max(300000).optional(),
+  extraHeaders: z.record(z.string(), z.string()).optional(),
+  timeoutMs: z.int().positive().max(300000).optional(),
   models: z.array(modelSchema).optional(),
 });
 
@@ -71,7 +76,7 @@ providersRouter.post('/', (req: Request, res: Response) => {
 
   const parsed = addProviderSchema.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ error: { message: parsed.error.errors.map(e => e.message).join(', ') } });
+    res.status(400).json({ error: { message: parsed.error.issues.map(e => e.message).join(', ') } });
     return;
   }
 
@@ -142,9 +147,9 @@ providersRouter.post('/', (req: Request, res: Response) => {
 
 const patchSchema = z.object({
   name: z.string().min(1).optional(),
-  baseUrl: z.string().url().optional(),
+  baseUrl: httpUrl.optional(),
   enabled: z.boolean().optional(),
-  timeoutMs: z.number().int().positive().max(300000).optional(),
+  timeoutMs: z.int().positive().max(300000).optional(),
 });
 
 // Update a custom provider (base URL / name / enabled) and re-register it live.
@@ -162,7 +167,7 @@ providersRouter.patch('/:platform', (req: Request, res: Response) => {
   }
   const parsed = patchSchema.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ error: { message: parsed.error.errors.map(e => e.message).join(', ') } });
+    res.status(400).json({ error: { message: parsed.error.issues.map(e => e.message).join(', ') } });
     return;
   }
 
