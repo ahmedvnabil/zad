@@ -15,9 +15,18 @@
     "postinstall": "bash scripts/install-hooks.sh 2>/dev/null || true"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.2.5"
   },
   "dependencies": {
     "@fontsource/ibm-plex-sans-arabic": "^5.3.0"
+  },
+  "overrides": {
+    "@hono/node-server": "1.19.17",
+    "@tailwindcss/vite": {
+      "vite": "8.1.6"
+    },
+    "@vitejs/plugin-react": {
+      "vite": "8.1.6"
+    }
   }
 }
